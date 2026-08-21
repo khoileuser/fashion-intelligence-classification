@@ -1,0 +1,33 @@
+# Experiment Protocol
+
+## Before training
+
+1. Confirm `scripts/data/audit.json`, `splits.csv`, and `normalization.json` exist.
+2. Record the notebook version, seed, device, hypothesis, and changed parameters.
+3. Verify that feature fitting, weighting, and augmentation use training rows only.
+4. Run a simple baseline before the neural candidate.
+
+## Selection
+
+- Classifiers select on validation macro F1.
+- Visual search selects on validation contrastive loss and frozen retrieval criteria.
+- Accuracy, weighted behavior, calibration, latency, size, robustness, and qualitative evidence support the decision.
+- Change one justified factor per comparison.
+- If candidates are practically tied, prefer the smaller or better-calibrated model.
+
+## Internal test rule
+
+The internal test set is evaluated once after the method is frozen. It is not another validation set. Any model change after seeing test results must be disclosed as test-set tuning.
+
+## Required reporting
+
+- Dataset support and excluded blanks
+- Baseline and candidate results
+- Learning curves and selected epoch
+- Per-class or retrieval metrics
+- Confusion/retrieval examples, including failures
+- Calibration and mild-corruption robustness
+- Runtime, model/index size, and reproducibility details
+- Limitations and an evidence-based ultimate judgement
+
+Never write performance claims before the corresponding notebook output exists.
