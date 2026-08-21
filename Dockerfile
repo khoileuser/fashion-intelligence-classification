@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM python:3.12-slim-bookworm AS server
+FROM python:3.12-alpine AS server
 
 ARG PYTORCH_INDEX_URL=https://download.pytorch.org/whl/cpu
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -30,19 +30,19 @@ EXPOSE 8000
 CMD ["uvicorn", "app.server.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 
-FROM oven/bun:1.2.22-alpine AS client-dependencies
+FROM oven/bun:1.4-alpine AS client-dependencies
 WORKDIR /workspace/app/client
 COPY app/client/package.json app/client/bun.lock ./
 RUN bun install --frozen-lockfile
 
-FROM node:22-alpine AS client-builder
+FROM node:26-alpine AS client-builder
 WORKDIR /workspace/app/client
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=client-dependencies /workspace/app/client/node_modules ./node_modules
 COPY app/client ./
 RUN npm run build
 
-FROM node:22-alpine AS client
+FROM node:26-alpine AS client
 WORKDIR /workspace
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
