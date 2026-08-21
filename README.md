@@ -19,7 +19,7 @@ fashion-intelligence-classification/
 |   |-- task3_occasion_gender_classification.ipynb
 |   `-- task4_visual_search_analysis.ipynb
 |-- prediction/              # Final styles_prediction.csv
-|-- scripts/                 # Five small preprocessing/inference entry points
+|-- scripts/                 # Preprocessing, inference, and notebook runner
 |-- Dockerfile               # `server` and `client` build targets
 |-- docker-compose.yml       # Two-service Portainer stack
 `-- requirements.txt         # Notebook/training environment
@@ -32,8 +32,8 @@ There is no installable modelling package, YAML configuration hierarchy, or sepa
 Use Python 3.12 and install the CUDA-compatible PyTorch build for the team machine if required.
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+python -m venv venv
+venv\Scripts\activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
@@ -54,7 +54,35 @@ dataset/
 
 The image filename must match the `id` column in its CSV. The dataset contents are ignored by Git; [dataset/README.md](dataset/README.md) is retained as an on-disk guide. `FASHION_DATA_ROOT` can still override the location when needed.
 
-Member 1 runs `notebooks/task0_data_audit_eda.ipynb` before model experiments. It creates the shared audit, split, and normalization files under `scripts/data/`. The split joins normalized product-name groups with exact SHA-256 duplicate groups. Every task notebook uses the same split and training-only normalization; do not regenerate them to improve a score.
+## Produce the application models
+
+Run the notebooks in the following order. Task 0 creates the shared audit, frozen split, and training-only normalization under `scripts/data/`. Its full image audit runs automatically the first time because no cached `image_audit.csv` exists.
+
+1. `notebooks/task0_data_audit_eda.ipynb`
+2. `notebooks/task1_article_type_classification.ipynb` → `models/article_type_model.pt`
+3. `notebooks/task2_season_classification.ipynb` → `models/season_model.pt`
+4. `notebooks/task3_occasion_gender_classification.ipynb` → `models/gender_model.pt` and `models/usage_model.pt`
+5. `notebooks/task4_visual_search_analysis.ipynb` → the visual-search model, embeddings, and metadata
+
+To execute all five notebooks automatically from the repository root:
+
+```powershell
+python scripts/run_all_notebooks.py
+```
+
+The runner validates the dataset layout, executes notebooks sequentially, saves their outputs in place, verifies every required artifact, and stops immediately if a task fails. Training all four tasks can take a long time. To resume after fixing a failure, start at a later task:
+
+```powershell
+python scripts/run_all_notebooks.py --start-at task2
+```
+
+To deliberately repeat Task 0's full decode and SHA-256 audit:
+
+```powershell
+python scripts/run_all_notebooks.py --force-audit
+```
+
+The split joins normalized product-name groups with exact SHA-256 duplicate groups. Every modelling notebook uses the same frozen split and training-only normalization; do not regenerate them merely to improve a score.
 
 Expected model outputs are:
 

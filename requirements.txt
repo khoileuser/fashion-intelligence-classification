@@ -13,3 +13,4 @@ python-multipart>=0.0.9
 uvicorn[standard]>=0.27
 jupyterlab>=4.1
 ipykernel>=6.29
+nbconvert>=7.16
