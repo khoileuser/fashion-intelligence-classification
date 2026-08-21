@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+node_modules/
+.next/
+*.tsbuildinfo
+
+# Notebook/editor state
+.ipynb_checkpoints/
+.vscode/
+.idea/
+
+# Supplied/private data
+FashionDataset/
+A2_FashionDataset.zip
+/data/
+/dataset/*
+!/dataset/README.md
+
+# Generated artifacts (directory placeholders remain tracked)
+scripts/data/*.csv
+scripts/data/*.json
+models/*.pt
+models/*.pth
+models/*.json
+models/*.csv
+models/*.npy
+prediction/*.csv
+
+# Local overrides and logs
+.env
+.env.local
+*.log
+
+!scripts/data/.gitkeep
+!models/.gitkeep
+!prediction/.gitkeep
