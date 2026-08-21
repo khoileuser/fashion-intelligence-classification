@@ -33,6 +33,39 @@ def seed_everything(seed: int = SEED) -> None:
     np.random.seed(seed)
 
 
+def select_torch_device():
+    """Select CPU/CUDA from FASHION_DEVICE and report the active accelerator."""
+    import torch
+
+    requested = os.environ.get("FASHION_DEVICE", "auto").strip().lower()
+    if requested not in {"auto", "cpu", "cuda"}:
+        raise ValueError("FASHION_DEVICE must be one of: auto, cpu, cuda")
+
+    cuda_available = torch.cuda.is_available()
+    if requested == "cuda" and not cuda_available:
+        raise RuntimeError(
+            "CUDA was requested but this Python environment cannot use it. "
+            f"PyTorch={torch.__version__}, CUDA build={torch.version.cuda}. "
+            "Install requirements-cuda.txt and restart the Jupyter kernel."
+        )
+
+    device = torch.device(
+        "cuda" if cuda_available and requested != "cpu" else "cpu"
+    )
+    if device.type == "cuda":
+        torch.backends.cudnn.benchmark = True
+        print(
+            f"Using CUDA: {torch.cuda.get_device_name(0)} | "
+            f"PyTorch {torch.__version__} | CUDA {torch.version.cuda}"
+        )
+    else:
+        print(
+            f"Using CPU | PyTorch {torch.__version__} | "
+            f"CUDA build {torch.version.cuda}"
+        )
+    return device
+
+
 def _read_csv(path: Path) -> pd.DataFrame:
     frame = pd.read_csv(path, dtype={"id": "string"}, keep_default_na=False)
     return frame.drop(columns=[c for c in frame.columns if c.startswith("Unnamed")])
@@ -95,5 +128,13 @@ def task_frame(
     if target not in TARGETS:
         raise ValueError(f"Unknown target {target!r}; choose from {TARGETS}")
     frame = load_metadata(root).merge(load_splits(), on="id", validate="one_to_one")
-    frame = frame.loc[frame["has_image"] & frame[target].str.strip().ne("")].copy()
+    valid = frame["has_image"] & frame[target].astype("string").str.strip().ne("")
+    train_labels = set(frame.loc[valid & frame["split"].eq("train"), target])
+    unsupported = sorted(set(frame.loc[valid, target]) - train_labels)
+    if unsupported:
+        raise ValueError(
+            f"Frozen split has {target} labels absent from training: {unsupported}. "
+            "Run Task 0 again to repair label coverage before training."
+        )
+    frame = frame.loc[valid].copy()
     return frame.loc[frame["split"].eq(split)].copy() if split else frame

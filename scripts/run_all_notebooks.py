@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+PROJECT_KERNEL = "fashion-intelligence"
 
 TASKS = (
     (
@@ -73,6 +74,73 @@ def validate_dataset(path: Path) -> None:
         )
 
 
+def validate_split_contract() -> None:
+    """Ensure every evaluated target label is represented in training."""
+    from preprocessing import TARGETS, load_metadata, load_splits
+
+    frame = load_metadata().merge(load_splits(), on="id", validate="one_to_one")
+    failures: dict[str, list[str]] = {}
+    for target in TARGETS:
+        valid = frame["has_image"] & frame[target].astype("string").str.strip().ne("")
+        train_labels = set(frame.loc[valid & frame["split"].eq("train"), target])
+        unsupported = sorted(set(frame.loc[valid, target]) - train_labels)
+        if unsupported:
+            failures[target] = unsupported
+    if failures:
+        details = "; ".join(f"{target}: {labels}" for target, labels in failures.items())
+        raise RuntimeError(
+            "Frozen split contains labels absent from training ("
+            f"{details}). Run the pipeline from task0 to repair it."
+        )
+
+
+def configure_accelerator(requested: str, environment: dict[str, str]) -> None:
+    """Validate the runner environment and pass its device choice to notebooks."""
+    try:
+        import torch
+    except ImportError as error:
+        raise RuntimeError("PyTorch is not installed; install requirements.txt first") from error
+
+    environment["FASHION_DEVICE"] = requested
+    if requested == "cpu":
+        environment["CUDA_VISIBLE_DEVICES"] = ""
+        print(f"Device: CPU (forced) | PyTorch {torch.__version__}")
+        return
+
+    if requested == "cuda" and not torch.cuda.is_available():
+        raise RuntimeError(
+            "CUDA was requested but is unavailable in the runner environment. "
+            f"PyTorch={torch.__version__}, CUDA build={torch.version.cuda}. "
+            "Install requirements-cuda.txt, restart the terminal/kernel, and retry."
+        )
+
+    if torch.cuda.is_available():
+        print(
+            f"Device: CUDA | {torch.cuda.get_device_name(0)} | "
+            f"PyTorch {torch.__version__} | CUDA {torch.version.cuda}"
+        )
+    else:
+        print(
+            f"Device: CPU (automatic fallback) | PyTorch {torch.__version__}. "
+            "Install requirements-cuda.txt to enable an NVIDIA GPU."
+        )
+
+
+def ensure_project_kernel(kernel: str) -> None:
+    """Install the runner's default kernel into the active virtual environment."""
+    if kernel != PROJECT_KERNEL:
+        return
+    try:
+        from ipykernel.kernelspec import install
+    except ImportError as error:
+        raise RuntimeError("ipykernel is not installed; install requirements.txt first") from error
+    location = install(
+        kernel_name=PROJECT_KERNEL,
+        display_name="Python (Fashion Intelligence)",
+        prefix=sys.prefix,
+    )
+    print(f"Jupyter kernel: {location}")
+
 def execute_notebook(
     notebook: Path,
     kernel: str,
@@ -83,7 +151,6 @@ def execute_notebook(
     command = (
         sys.executable,
         "-m",
-        "jupyter",
         "nbconvert",
         "--to",
         "notebook",
@@ -105,7 +172,9 @@ def main() -> int:
         help="Resume at this task after fixing a failed run (default: task0).",
     )
     parser.add_argument(
-        "--kernel", default="python3", help="Jupyter kernel name (default: python3)."
+        "--kernel",
+        default=PROJECT_KERNEL,
+        help=f"Jupyter kernel name (default: {PROJECT_KERNEL}).",
     )
     parser.add_argument(
         "--timeout",
@@ -118,18 +187,28 @@ def main() -> int:
         action="store_true",
         help="Repeat the full Task 0 image decode and SHA-256 audit.",
     )
+    parser.add_argument(
+        "--device",
+        choices=("auto", "cuda", "cpu"),
+        default="auto",
+        help="Training device; cuda fails instead of silently falling back (default: auto).",
+    )
     args = parser.parse_args()
 
+    ensure_project_kernel(args.kernel)
     data_path = dataset_root()
     validate_dataset(data_path)
     environment = os.environ.copy()
     environment["FASHION_DATA_ROOT"] = str(data_path)
     environment["FASHION_RUN_FULL_AUDIT"] = "1" if args.force_audit else "auto"
+    configure_accelerator(args.device, environment)
 
     start_index = next(
         index for index, task in enumerate(TASKS) if task[0] == args.start_at
     )
     selected_tasks = TASKS[start_index:]
+    if start_index > 0:
+        validate_split_contract()
     print(f"Dataset: {data_path}")
     print("Tasks: " + " -> ".join(task[0] for task in selected_tasks))
 
@@ -138,6 +217,8 @@ def main() -> int:
         print(f"\n[{position}/{len(selected_tasks)}] Running {name}: {notebook.name}")
         started = time.perf_counter()
         execute_notebook(notebook, args.kernel, args.timeout, environment)
+        if name == "task0":
+            validate_split_contract()
         missing = [path for path in expected if not path.is_file()]
         if missing:
             raise RuntimeError(

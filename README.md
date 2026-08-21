@@ -33,10 +33,29 @@ Use Python 3.12 and install the CUDA-compatible PyTorch build for the team machi
 
 ```powershell
 python -m venv venv
-venv\Scripts\activate
+.\venv\Scripts\activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+### NVIDIA CUDA training
+
+The notebooks automatically use CUDA when the active Jupyter environment has a CUDA-enabled PyTorch build. The normal requirements file may install a CPU-only build. On a supported NVIDIA system, replace it with the official CUDA 12.8 wheels:
+
+```powershell
+.\venv\Scripts\activate
+python -m pip install --force-reinstall -r requirements-cuda.txt
+python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available(), torch.cuda.get_device_name(0))"
+```
+
+The verification command must print `True` before starting Jupyter. The automatic notebook runner registers and uses a `fashion-intelligence` kernel tied to its active Python environment. For manual Jupyter work, register the same kernel and select **Python (Fashion Intelligence)** in the notebook UI:
+
+```powershell
+python -m ipykernel install --prefix "$env:VIRTUAL_ENV" --name fashion-intelligence --display-name "Python (Fashion Intelligence)"
+jupyter lab
+```
+
+Restart any running Jupyter kernel after changing PyTorch. Task 0, image decoding, HOG feature extraction, scikit-learn baselines, and data loading remain CPU operations; CUDA is used by the CNN training, evaluation, and embedding cells.
 
 The private dataset is read from `dataset/` at the repository root by default. Copy the **contents** of the supplied `FashionDataset` folder into it so there is no extra wrapper level:
 
@@ -67,13 +86,13 @@ Run the notebooks in the following order. Task 0 creates the shared audit, froze
 To execute all five notebooks automatically from the repository root:
 
 ```powershell
-python scripts/run_all_notebooks.py
+python scripts/run_all_notebooks.py --device cuda
 ```
 
-The runner validates the dataset layout, executes notebooks sequentially, saves their outputs in place, verifies every required artifact, and stops immediately if a task fails. Training all four tasks can take a long time. To resume after fixing a failure, start at a later task:
+The runner validates the dataset layout and CUDA availability, executes notebooks sequentially, saves their outputs in place, verifies every required artifact, and stops immediately if a task fails. Using `--device cuda` prevents silent CPU fallback. Training all four tasks can take a long time. To resume after fixing a failure, start at a later task:
 
 ```powershell
-python scripts/run_all_notebooks.py --start-at task2
+python scripts/run_all_notebooks.py --device cuda --start-at task2
 ```
 
 To deliberately repeat Task 0's full decode and SHA-256 audit:
@@ -82,7 +101,7 @@ To deliberately repeat Task 0's full decode and SHA-256 audit:
 python scripts/run_all_notebooks.py --force-audit
 ```
 
-The split joins normalized product-name groups with exact SHA-256 duplicate groups. Every modelling notebook uses the same frozen split and training-only normalization; do not regenerate them merely to improve a score.
+The split joins normalized product-name groups with exact SHA-256 duplicate groups. Task 0 also moves whole groups into training when necessary to guarantee that every evaluated label is learnable. The runner checks this contract before resumed tasks. Every modelling notebook uses the same frozen split and training-only normalization; do not regenerate it merely to improve a score.
 
 Expected model outputs are:
 

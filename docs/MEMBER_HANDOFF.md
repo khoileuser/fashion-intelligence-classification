@@ -12,20 +12,21 @@
 
 The assignment's occasion label is the metadata column `usage`. Member 3 trains gender and usage as two separate classifiers but reports them together as one assignment task.
 
-## What Member 1 provides first
+## What Member 1 has provided
 
-Before anyone trains, Member 1 must complete Task 0 and share:
+Task 0 and Task 1 were executed successfully on 21 August 2026. Member 1 provides:
 
 - `scripts/data/audit.json`
 - `scripts/data/image_audit.csv`
 - `scripts/data/splits.csv`
 - `scripts/data/normalization.json`
+- `models/article_type_model.pt`
 
-The team must review the audit and split. Once modelling starts, `splits.csv` is frozen.
+The split passed duplicate-group isolation and training-label coverage checks for all four targets. It repaired the rare `Shoe Laces` article type by moving its complete group to training. Treat `splits.csv` as frozen; rerun Task 0 only if the runner explicitly reports a split-contract failure.
 
 ## How to work
 
-1. Install `requirements.txt` and run Task 0 first.
+1. Install `requirements.txt` plus `requirements-cuda.txt` for an NVIDIA machine; use the `fashion-intelligence` Jupyter kernel.
 2. Open only your assigned task notebook.
 3. Run the majority/pixel baseline before the neural model.
 4. Keep every architecture, training step, plot, metric, and interpretation visible in the notebook.
@@ -72,3 +73,9 @@ The team must review the audit and split. Once modelling starts, `splits.csv` is
 - The rule prohibiting pretrained weights or unapproved external data
 
 Read `CLASSIFIER_CONTRACT.md` before saving a final model.
+
+Members 2–4 can resume automated execution at Task 2 with:
+
+```powershell
+python scripts/run_all_notebooks.py --device cuda --start-at task2
+```

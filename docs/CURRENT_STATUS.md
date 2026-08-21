@@ -1,28 +1,28 @@
 # Current Status
 
-Last structural validation: 20 August 2026.
+Last execution check: 21 August 2026.
 
 ## Complete
 
-- Rice-sample-style top-level layout
-- Standalone preprocessing helper and flat shared-data outputs
-- Task 0 audit/EDA notebook
-- Complete notebook workflows for Tasks 1–4
-- Four small saved-model prediction/search scripts
-- Flat checkpoint and visual-search index contracts
-- API and Streamlit integration paths
-- Team handoff and experiment documentation
+- The supplied dataset is installed under `dataset/` and passes the runner's layout check.
+- Task 0 completed and produced the image audit, frozen group split, and training-only normalization under `scripts/data/`.
+- The frozen split preserves duplicate-group isolation and guarantees that every article type, season, gender, and usage label has at least one training example.
+- Task 1 completed on an NVIDIA RTX 3060 with CUDA and produced `models/article_type_model.pt`.
+- All five notebooks use the `fashion-intelligence` project kernel and have valid notebook cell IDs.
+- The API, Next.js client, Docker deployment files, prediction/search scripts, and team experiment documentation are present.
 
-## Still requires execution
+## Next work
 
-- Hydrate the complete supplied dataset locally.
-- Run the full image audit.
-- Create, review, and freeze `scripts/data/splits.csv`.
-- Compute `scripts/data/normalization.json`.
-- Execute baselines, training, validation selection, and final test evaluation in every assigned notebook.
-- Replace notebook observation prompts with real findings.
-- Save the five selected models and visual-search gallery.
-- Generate and validate `prediction/styles_prediction.csv`.
-- Perform a clean-environment application check.
+- Member 2: run Task 2 and review/export `models/season_model.pt`.
+- Member 3: run Task 3 and review/export `models/gender_model.pt` and `models/usage_model.pt`.
+- Member 4: run Task 4 and review/export the visual-search encoder, embeddings, and gallery metadata.
+- Member 1: integrate returned models, generate and validate `prediction/styles_prediction.csv`, then perform a clean API/client deployment check.
+- Every owner must replace remaining observation prompts with conclusions supported by their executed notebook outputs.
 
-The previous provisional name-only split was removed during the simplification. Do not train until Task 0 creates and the team approves the final split.
+Resume the automatic pipeline without repeating completed Tasks 0 and 1:
+
+```powershell
+python scripts/run_all_notebooks.py --device cuda --start-at task2
+```
+
+The runner checks the frozen split contract before a resumed run. If a stale split lacks training coverage for a rare label, rerun Task 0; it repairs coverage by moving the label's entire duplicate group to training.

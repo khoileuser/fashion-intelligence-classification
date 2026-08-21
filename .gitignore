@@ -266,11 +266,11 @@ A2_FashionDataset.zip
 # Generated artifacts (directory placeholders remain tracked)
 scripts/data/*.csv
 scripts/data/*.json
-models/*.pt
-models/*.pth
-models/*.json
-models/*.csv
-models/*.npy
+# models/*.pt
+# models/*.pth
+# models/*.json
+# models/*.csv
+# models/*.npy
 prediction/*.csv
 
 !scripts/data/.gitkeep
