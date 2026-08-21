@@ -261,7 +261,7 @@ FashionDataset/
 A2_FashionDataset.zip
 /data/
 /dataset/*
-!/dataset/README.md
+!/dataset/.gitkeep
 
 # Generated artifacts (directory placeholders remain tracked)
 scripts/data/*.csv
