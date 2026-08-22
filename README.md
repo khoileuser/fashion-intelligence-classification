@@ -71,11 +71,15 @@ dataset/
         `-- <product-id>.jpg
 ```
 
-The image filename must match the `id` column in its CSV. The dataset contents are ignored by Git; [dataset/README.md](dataset/README.md) is retained as an on-disk guide. `FASHION_DATA_ROOT` can still override the location when needed.
+The image filename must match the `id` column in its CSV. The dataset contents are ignored by Git; [dataset/README.md](dataset/README.md) is retained as an on-disk guide and records the expected CSV SHA-256 fingerprints. Verify them before using the frozen manifests. `FASHION_DATA_ROOT` can still override the location when needed.
 
 ## Produce the application models
 
-Run the notebooks in the following order. Task 0 creates the shared audit, frozen split, and training-only normalization under `scripts/data/`. Its full image audit runs automatically the first time because no cached `image_audit.csv` exists.
+Task 0 has created the shared audit, frozen split, and training-only normalization under `scripts/data/`. These handoff artifacts are versioned so every member uses the same IDs and preprocessing statistics; the private dataset itself remains ignored. Do not regenerate the split locally.
+
+The classifier checkpoints currently present under `models/` are **prototype/mock artifacts used for application development**. They are loadable, but they are not accepted final assignment models and must be replaced by the responsible classifier owners after controlled investigation and analysis.
+
+For a clean final integration run, execute the notebooks in the following order:
 
 1. `notebooks/task0_data_audit_eda.ipynb`
 2. `notebooks/task1_article_type_classification.ipynb` → `models/article_type_model.pt`
@@ -89,11 +93,13 @@ To execute all five notebooks automatically from the repository root:
 python scripts/run_all_notebooks.py --device cuda
 ```
 
-The runner validates the dataset layout and CUDA availability, executes notebooks sequentially, saves their outputs in place, verifies every required artifact, and stops immediately if a task fails. Using `--device cuda` prevents silent CPU fallback. Training all four tasks can take a long time. To resume after fixing a failure, start at a later task:
+The runner validates the dataset layout and CUDA availability, executes notebooks sequentially, saves their outputs in place, verifies every required artifact, and stops immediately if a task fails. Using `--device cuda` prevents silent CPU fallback. Training all four tasks can take a long time. `--start-at` is only for the integrator resuming a sequential pipeline after a failure; it runs the selected task **and every later task** and may overwrite other members' artifacts:
 
 ```powershell
 python scripts/run_all_notebooks.py --device cuda --start-at task2
 ```
+
+During parallel development, each member must open and execute only their assigned notebook. See `docs/MEMBER_HANDOFF.md` for the ownership map and return checklist.
 
 To deliberately repeat Task 0's full decode and SHA-256 audit:
 
@@ -107,12 +113,21 @@ Expected model outputs are:
 
 ```text
 models/article_type_model.pt
+models/article_type_history.csv
+models/article_type_comparison.csv
 models/season_model.pt
+models/season_history.csv
+models/season_comparison.csv
 models/gender_model.pt
+models/gender_history.csv
+models/gender_comparison.csv
 models/usage_model.pt
+models/usage_history.csv
+models/usage_comparison.csv
 models/visual_search_model.pt
 models/visual_search_embeddings.npy
 models/visual_search_metadata.csv
+models/visual_search_history.csv
 ```
 
 The small saved-model helpers remain available:

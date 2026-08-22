@@ -262,6 +262,7 @@ A2_FashionDataset.zip
 /data/
 /dataset/*
 !/dataset/.gitkeep
+!/dataset/README.md
 
 # Generated artifacts (directory placeholders remain tracked)
 scripts/data/*.csv
@@ -274,5 +275,9 @@ scripts/data/*.json
 prediction/*.csv
 
 !scripts/data/.gitkeep
+!scripts/data/audit.json
+!scripts/data/image_audit.csv
+!scripts/data/normalization.json
+!scripts/data/splits.csv
 !models/.gitkeep
 !prediction/.gitkeep

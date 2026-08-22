@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
 import random
 from pathlib import Path
@@ -19,6 +20,37 @@ IMAGE_AUDIT_PATH = OUTPUT_DIR / "image_audit.csv"
 TARGETS = ("articleType", "season", "gender", "usage")
 SEED = 2753
 IMAGE_SIZE = (96, 128)  # width, height
+EXPECTED_CSV_SHA256 = {
+    "train/styles_train.csv": "54D503743F79F22BF03F9E2C216B53E75D5F2129EDA5934CFA25C642C70AF44D",
+    "test/styles_prediction.csv": "7F83F219D0FB7F2EC86B8B5C0BA28C2CFADD8F8E6E85A36C9919C9AB5C41315E",
+}
+
+
+def file_sha256(path: str | Path) -> str:
+    """Return an uppercase SHA-256 fingerprint without loading the file at once."""
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest().upper()
+
+
+def validate_dataset_release(root: str | Path | None = None) -> None:
+    """Fail when local CSVs differ from the frozen split's source release."""
+    dataset = data_root(root)
+    failures = {}
+    for relative, expected in EXPECTED_CSV_SHA256.items():
+        path = dataset / relative
+        if not path.is_file():
+            raise FileNotFoundError(f"Missing required dataset file: {path}")
+        actual = file_sha256(path)
+        if actual != expected:
+            failures[relative] = {"expected": expected, "actual": actual}
+    if failures:
+        raise ValueError(
+            "Dataset CSV fingerprints do not match the frozen handoff release: "
+            f"{failures}. Obtain the authorized team copy before training."
+        )
 
 
 def data_root(override: str | Path | None = None) -> Path:
@@ -74,6 +106,7 @@ def _read_csv(path: Path) -> pd.DataFrame:
 def load_metadata(root: str | Path | None = None) -> pd.DataFrame:
     """Load training metadata and attach expected image paths."""
     dataset = data_root(root)
+    validate_dataset_release(dataset)
     frame = _read_csv(dataset / "train" / "styles_train.csv")
     image_dir = dataset / "train" / "images_train"
     frame["image_path"] = frame["id"].map(lambda value: str(image_dir / f"{value}.jpg"))
@@ -84,6 +117,7 @@ def load_metadata(root: str | Path | None = None) -> pd.DataFrame:
 def load_prediction_template(root: str | Path | None = None) -> pd.DataFrame:
     """Load the course-test template and attach expected image paths."""
     dataset = data_root(root)
+    validate_dataset_release(dataset)
     frame = _read_csv(dataset / "test" / "styles_prediction.csv")
     image_dir = dataset / "test" / "images_test"
     frame["image_path"] = frame["id"].map(lambda value: str(image_dir / f"{value}.jpg"))

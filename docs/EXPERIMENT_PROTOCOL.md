@@ -10,6 +10,7 @@
 ## Selection
 
 - Classifiers select on validation macro F1.
+- Macro F1 is computed over the fixed set of ground-truth labels supported by that evaluation partition. Labels absent from a partition are reported as absent rather than conditionally entering the metric only when predicted.
 - Visual search selects on validation contrastive loss and frozen retrieval criteria.
 - Accuracy, weighted behavior, calibration, latency, size, robustness, and qualitative evidence support the decision.
 - Change one justified factor per comparison.
@@ -29,5 +30,6 @@ The internal test set is evaluated once after the method is frozen. It is not an
 - Calibration and mild-corruption robustness
 - Runtime, model/index size, and reproducibility details
 - Limitations and an evidence-based ultimate judgement
+- Independent comparison with relevant literature or genuinely external data, including dataset and metric comparability caveats
 
 Never write performance claims before the corresponding notebook output exists.

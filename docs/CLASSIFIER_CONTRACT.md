@@ -2,12 +2,12 @@
 
 Tasks 1–3 define and train their models inside notebooks. The small scripts and API can load them only if every owner follows this flat checkpoint contract.
 
-| Target | File |
-|---|---|
+| Target        | File                           |
+| ------------- | ------------------------------ |
 | `articleType` | `models/article_type_model.pt` |
-| `season` | `models/season_model.pt` |
-| `gender` | `models/gender_model.pt` |
-| `usage` | `models/usage_model.pt` |
+| `season`      | `models/season_model.pt`       |
+| `gender`      | `models/gender_model.pt`       |
+| `usage`       | `models/usage_model.pt`        |
 
 Each checkpoint must be saved as a dictionary:
 
@@ -36,5 +36,3 @@ python scripts/task1_article_type_classification.py path\to\image.jpg
 python scripts/task2_season_classification.py path\to\image.jpg
 python scripts/task3_occasion_gender_classification.py --image path\to\image.jpg --target gender
 ```
-
-Member 4 follows the analogous embedding contract documented directly in Task 4 and returns three flat files: `visual_search_model.pt`, `visual_search_embeddings.npy`, and `visual_search_metadata.csv`.

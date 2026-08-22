@@ -17,6 +17,7 @@ TASKS = (
         "task0",
         ROOT / "notebooks" / "task0_data_audit_eda.ipynb",
         (
+            ROOT / "scripts" / "data" / "audit.json",
             ROOT / "scripts" / "data" / "image_audit.csv",
             ROOT / "scripts" / "data" / "splits.csv",
             ROOT / "scripts" / "data" / "normalization.json",
@@ -25,19 +26,31 @@ TASKS = (
     (
         "task1",
         ROOT / "notebooks" / "task1_article_type_classification.ipynb",
-        (ROOT / "models" / "article_type_model.pt",),
+        (
+            ROOT / "models" / "article_type_model.pt",
+            ROOT / "models" / "article_type_history.csv",
+            ROOT / "models" / "article_type_comparison.csv",
+        ),
     ),
     (
         "task2",
         ROOT / "notebooks" / "task2_season_classification.ipynb",
-        (ROOT / "models" / "season_model.pt",),
+        (
+            ROOT / "models" / "season_model.pt",
+            ROOT / "models" / "season_history.csv",
+            ROOT / "models" / "season_comparison.csv",
+        ),
     ),
     (
         "task3",
         ROOT / "notebooks" / "task3_occasion_gender_classification.ipynb",
         (
             ROOT / "models" / "gender_model.pt",
+            ROOT / "models" / "gender_history.csv",
+            ROOT / "models" / "gender_comparison.csv",
             ROOT / "models" / "usage_model.pt",
+            ROOT / "models" / "usage_history.csv",
+            ROOT / "models" / "usage_comparison.csv",
         ),
     ),
     (
@@ -47,6 +60,7 @@ TASKS = (
             ROOT / "models" / "visual_search_model.pt",
             ROOT / "models" / "visual_search_embeddings.npy",
             ROOT / "models" / "visual_search_metadata.csv",
+            ROOT / "models" / "visual_search_history.csv",
         ),
     ),
 )
