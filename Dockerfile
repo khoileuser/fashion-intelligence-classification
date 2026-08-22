@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM python:3.12-alpine AS server
+FROM python:3.12-slim AS server
 
 ARG PYTORCH_INDEX_URL=https://download.pytorch.org/whl/cpu
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -22,7 +22,6 @@ RUN useradd --create-home --uid 10001 fashion \
     && mkdir -p /workspace/models /workspace/dataset \
     && chown -R fashion:fashion /workspace
 
-COPY --chown=fashion:fashion app/__init__.py app/__init__.py
 COPY --chown=fashion:fashion app/server app/server
 
 USER fashion
