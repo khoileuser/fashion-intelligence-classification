@@ -274,10 +274,4 @@ scripts/data/*.json
 # models/*.npy
 prediction/*.csv
 
-!scripts/data/.gitkeep
-!scripts/data/audit.json
-!scripts/data/image_audit.csv
-!scripts/data/normalization.json
-!scripts/data/splits.csv
-!models/.gitkeep
 !prediction/.gitkeep

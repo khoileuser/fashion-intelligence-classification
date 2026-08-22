@@ -9,10 +9,11 @@
 
 ## Selection
 
-- Classifiers select on validation macro F1.
+- Classifiers select primarily on validation macro F1. The versioned starter notebooks treat candidates within 0.01 macro F1 as practically near-tied, then prefer lower validation ECE and lower parameter count. Change this rule only before viewing internal-test results and document the reason.
 - Macro F1 is computed over the fixed set of ground-truth labels supported by that evaluation partition. Labels absent from a partition are reported as absent rather than conditionally entering the metric only when predicted.
 - Visual search selects on validation contrastive loss and frozen retrieval criteria.
 - Accuracy, weighted behavior, calibration, latency, size, robustness, and qualitative evidence support the decision.
+- The saved comparison CSV must contain the majority reference, classical candidate, every neural candidate, validation calibration, complexity, and selection eligibility; it must not contain only the winning loss mode.
 - Change one justified factor per comparison.
 - If candidates are practically tied, prefer the smaller or better-calibrated model.
 

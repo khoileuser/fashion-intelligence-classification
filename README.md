@@ -77,7 +77,7 @@ The image filename must match the `id` column in its CSV. The dataset contents a
 
 Task 0 has created the shared audit, frozen split, and training-only normalization under `scripts/data/`. These handoff artifacts are versioned so every member uses the same IDs and preprocessing statistics; the private dataset itself remains ignored. Do not regenerate the split locally.
 
-The classifier checkpoints currently present under `models/` are **prototype/mock artifacts used for application development**. They are loadable, but they are not accepted final assignment models and must be replaced by the responsible classifier owners after controlled investigation and analysis.
+The classifier checkpoints currently present under `models/` are **prototype/mock artifacts used for application development**. They are loadable, but they are not accepted final assignment models and must be replaced by the responsible classifier owners after controlled investigation and analysis. Final classifier artifacts may contain either the shared compact CNN or the fitted HOG+HSV logistic-regression pipeline; both follow `docs/CLASSIFIER_CONTRACT.md` and are supported by the API.
 
 For a clean final integration run, execute the notebooks in the following order:
 
@@ -99,7 +99,7 @@ The runner validates the dataset layout and CUDA availability, executes notebook
 python scripts/run_all_notebooks.py --device cuda --start-at task2
 ```
 
-During parallel development, each member must open and execute only their assigned notebook. See `docs/MEMBER_HANDOFF.md` for the ownership map and return checklist.
+During parallel development, each member must open and execute only their assigned notebook. See `docs/MEMBER_HANDOFF.md` for the ownership map and return checklist. Record answers to assignment ambiguities in `docs/TEACHING_TEAM_CONFIRMATIONS.md` rather than making silent target-vocabulary or model-count changes.
 
 To deliberately repeat Task 0's full decode and SHA-256 audit:
 

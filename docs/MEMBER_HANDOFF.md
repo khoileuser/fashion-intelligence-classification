@@ -73,10 +73,10 @@ Open only the assigned notebook in Jupyter. Do not use `run_all_notebooks.py --s
 2. Run the majority and handcrafted baseline before neural candidates.
 3. Execute both ordinary-loss and weighted/class-balanced candidates. The notebooks reinitialize the model, data-loader generator, and framework seed identically for each run.
 4. Fit normalization, weighting, feature transforms, and augmentation on training rows only.
-5. Select the method using validation macro F1 plus calibration/efficiency evidence. Do not use the current mock checkpoint as a candidate result.
+5. Build one comparison table containing the majority reference, HOG+HSV logistic regression, and both CNN loss candidates. Select primarily on validation macro F1; candidates within 0.01 use lower validation ECE and then lower parameter count as predeclared tie-breakers. Do not use the current mock checkpoint as a candidate result.
 6. Evaluate the internal test split only after writing down the frozen selection. Existing prototype test outputs must not be used for tuning.
 7. Replace every observation, failure-analysis, and ultimate-judgement prompt with conclusions supported by executed outputs.
-8. Save only the assigned checkpoint, selected history, and validation-comparison filenames, then verify the checkpoint on CPU through the matching script.
+8. Save only the assigned checkpoint, selected history, and full validation-comparison filenames, then verify the checkpoint on CPU through the matching script. The shared loader supports `compact_cnn` and `hog_hsv_logistic_regression`; do not force a weaker CNN for application compatibility.
 9. Return at least one credible work with a comparable goal for independent evaluation. State differences in dataset, split, model constraints, and metric definition; do not present non-comparable headline scores as a direct ranking.
 
 ## Target requirements
@@ -87,7 +87,7 @@ Open only the assigned notebook in Jupyter. Do not use `run_all_notebooks.py --s
 - Confirm the scaled HOG+HSV logistic-regression pipeline reaches convergence; do not treat the baseline as reliable if a convergence warning remains.
 - Report macro F1, top-3 accuracy, and explicit head/medium/tail behaviour.
 - Analyse major confusions, confidence/calibration, mild-corruption robustness, latency, and model size.
-- Justify the final selection: the current prototype's HOG+HSV validation macro F1 is higher than its CNN result, so the CNN cannot be selected without new evidence or a defensible non-score trade-off.
+- Justify the final selection from the newly executed full comparison. A prior prototype run suggested that HOG+HSV could outperform the mock CNN, but that observation is not accepted evidence and must be reproduced under the frozen protocol.
 
 ### Member 3: season
 
