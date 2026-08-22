@@ -1,0 +1,45 @@
+{
+  "training_rows": 38617,
+  "unique_training_ids": 38617,
+  "duplicate_training_ids": 0,
+  "training_images_found": 38612,
+  "missing_training_ids": [
+    "12347",
+    "39401",
+    "39403",
+    "39410",
+    "39425"
+  ],
+  "orphan_training_image_ids": [],
+  "test_rows": 5829,
+  "unique_test_ids": 5829,
+  "missing_test_ids": [],
+  "orphan_test_image_ids": [],
+  "styles_train_sha256": "54D503743F79F22BF03F9E2C216B53E75D5F2129EDA5934CFA25C642C70AF44D",
+  "styles_prediction_sha256": "7F83F219D0FB7F2EC86B8B5C0BA28C2CFADD8F8E6E85A36C9919C9AB5C41315E",
+  "blank_labels": {
+    "articleType": 0,
+    "season": 20,
+    "gender": 0,
+    "usage": 1
+  },
+  "decoded_images": 38611,
+  "decode_errors": [
+    "8121"
+  ],
+  "exact_duplicate_hash_groups": 636,
+  "rows_in_exact_duplicate_groups": 1399,
+  "labels_lost_after_image_cleaning": {
+    "articleType": [
+      "Suits"
+    ],
+    "season": [],
+    "gender": [],
+    "usage": []
+  },
+  "image_modes": {
+    "RGB": 38268,
+    "L": 343,
+    "": 1
+  }
+}
