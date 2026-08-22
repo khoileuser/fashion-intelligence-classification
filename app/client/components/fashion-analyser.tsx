@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
+import { addHistoryEntry, createThumbnail } from "@/lib/history"
 import { cn } from "@/lib/utils"
 import type { AnalysisResponse, HealthResponse, Prediction, SimilarItem } from "@/lib/types"
 
@@ -163,7 +164,21 @@ export function FashionAnalyser() {
       if (!response.ok) {
         throw new Error(typeof body.detail === "string" ? body.detail : "Analysis failed.")
       }
-      setResult(body as AnalysisResponse)
+      const analysisResult = body as AnalysisResponse
+      setResult(analysisResult)
+
+      try {
+        const thumbnail = await createThumbnail(file)
+        addHistoryEntry({
+          id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+          fileName: file.name,
+          thumbnail,
+          predictions: analysisResult.predictions,
+        })
+      } catch (historyError) {
+        console.warn("Analysis completed, but history could not be saved.", historyError)
+      }
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Analysis failed.")
     } finally {
@@ -182,9 +197,9 @@ export function FashionAnalyser() {
 
   const status = {
     checking: { label: "Checking service", className: "text-muted-foreground" },
-    ready: { label: "Ready", className: "border-emerald-200 bg-emerald-50 text-emerald-700" },
-    partial: { label: "Models unavailable", className: "border-amber-200 bg-amber-50 text-amber-700" },
-    offline: { label: "Service offline", className: "border-red-200 bg-red-50 text-red-700" },
+    ready: { label: "Ready", className: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300" },
+    partial: { label: "Models unavailable", className: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300" },
+    offline: { label: "Service offline", className: "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300" },
   }[health]
 
   return (
@@ -245,10 +260,10 @@ export function FashionAnalyser() {
               </div>
               {file && <p className="mt-3 truncate text-xs text-muted-foreground">Selected: {file.name}</p>}
               {error && (
-                <Alert className="mt-4 border-red-200 bg-red-50 text-red-800">
+                <Alert className="mt-4 border-red-200 bg-red-50 text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
                   <AlertCircle className="size-4" />
                   <AlertTitle>Couldn&apos;t complete the analysis</AlertTitle>
-                  <AlertDescription className="text-red-700">{error}</AlertDescription>
+                  <AlertDescription className="text-red-700 dark:text-red-300">{error}</AlertDescription>
                 </Alert>
               )}
             </CardContent>
