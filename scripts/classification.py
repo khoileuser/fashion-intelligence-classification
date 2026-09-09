@@ -22,12 +22,14 @@ from scripts.preprocessing import IMAGE_SIZE, SEED
 
 
 class FashionDataset(Dataset):
-    def __init__(self, frame, target, labels, normalisation, training=False):
+    def __init__(self, frame, target, labels, normalisation, training=False, lighting=False):
         self.paths = frame.image_path.tolist()
         self.targets = [labels.index(label) for label in frame[target]]
         steps = [transforms.Resize((IMAGE_SIZE[1], IMAGE_SIZE[0]))]
         if training:
             steps.append(transforms.RandomHorizontalFlip())
+            if lighting:
+                steps.append(transforms.ColorJitter(brightness=0.2, contrast=0.2))
         steps.extend([
             transforms.ToTensor(),
             transforms.Normalize(normalisation['mean'], normalisation['std']),
@@ -43,8 +45,8 @@ class FashionDataset(Dataset):
         return tensor, self.targets[index]
 
 
-def make_loader(frame, target, labels, normalisation, training=False):
-    dataset = FashionDataset(frame, target, labels, normalisation, training)
+def make_loader(frame, target, labels, normalisation, training=False, lighting=False):
+    dataset = FashionDataset(frame, target, labels, normalisation, training, lighting)
     return DataLoader(
         dataset, batch_size=64, shuffle=training, num_workers=0,
         generator=torch.Generator().manual_seed(SEED),

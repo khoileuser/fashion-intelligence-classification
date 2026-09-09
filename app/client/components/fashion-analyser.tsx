@@ -34,6 +34,12 @@ function PredictionCard({ target, prediction }: { target: string; prediction: Pr
     <Card className="gap-5">
       <CardHeader>
         <CardDescription>{targetLabel(target)}</CardDescription>
+        {prediction.needs_review && (
+          <Badge variant="outline">Needs review</Badge>
+        )}
+        {prediction.review_reason && (
+          <p className="text-xs text-muted-foreground">{prediction.review_reason}</p>
+        )}
         <div className="flex items-end justify-between gap-4">
           <CardTitle className="text-xl leading-tight">{prediction.label}</CardTitle>
           <span className="text-sm font-semibold">{percent(prediction.confidence)}</span>
@@ -67,7 +73,7 @@ function SimilarCard({ item, rank }: { item: SimilarItem; rank: number }) {
         <img
           src={`/api/backend/gallery/${encodeURIComponent(id)}/image`}
           alt={String(title)}
-          className="h-full w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+          className="h-full w-full object-contain transition-transform duration-300 hover:scale-[1.02]"
         />
         <Badge className="absolute left-3 top-3 bg-background text-foreground shadow-sm">#{rank}</Badge>
       </div>
@@ -82,8 +88,8 @@ function SimilarCard({ item, rank }: { item: SimilarItem; rank: number }) {
           ))}
         </div>
         <div className="flex items-center justify-between border-t pt-3 text-xs">
-          <span className="text-muted-foreground">Visual match</span>
-          <span className="font-semibold">{percent(score)}</span>
+          <span className="text-muted-foreground" title="Cosine similarity ranks visual features; it is not a probability of a correct match.">Similarity</span>
+          <span className="font-semibold">{score.toFixed(3)}</span>
         </div>
       </CardContent>
     </Card>
@@ -294,10 +300,17 @@ export function FashionAnalyser() {
                     return (
                       <div className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0" key={target}>
                         <div className="flex items-center gap-3">
-                          <CheckCircle2 className="size-4 text-emerald-600" aria-hidden="true" />
+                          {prediction.needs_review ? (
+                            <AlertCircle className="size-4 text-amber-600" aria-hidden="true" />
+                          ) : (
+                            <CheckCircle2 className="size-4 text-emerald-600" aria-hidden="true" />
+                          )}
                           <div>
                             <p className="text-xs text-muted-foreground">{targetLabel(target)}</p>
                             <p className="font-medium">{prediction.label}</p>
+                            {prediction.needs_review && (
+                              <p className="text-xs text-amber-700 dark:text-amber-400">Needs review</p>
+                            )}
                           </div>
                         </div>
                         <Badge variant="secondary">{percent(prediction.confidence)}</Badge>

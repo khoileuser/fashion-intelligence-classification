@@ -75,12 +75,26 @@ The image filename must match the `id` column in its CSV. The dataset contents a
 
 ## Produce the application models
 
-**Task 0/4 update:** Task 0 now validates existing frozen data without rewriting
-the split. Task 4's simpler fixed-feature cosine-search notebook is prepared but
-**not executed**; current search artifacts still belong to the previous neural
-encoder. Its new performance and API integration remain unverified. See
-[the Task 0/4 change record](docs/TASK0_TASK4_SIMPLIFICATION.md). The all-notebook
-runner below will execute Task 4 too, so use it only when that run is intended.
+The subsequent [simple training trials](SIMPLE_TRAINING_TRIALS.md) retain a
+brightness-trained article classifier (80.27% internal-test accuracy). The small
+F1 gain and worse ECE are documented alongside unsuccessful candidates and
+remaining browser errors.
+
+The latest from-scratch classifier trials are recorded in
+[CLASSIFIER_TRIALS.md](CLASSIFIER_TRIALS.md), with runnable experiment code and
+comparison CSVs under `experiments/`. Its [accuracy-priority update](CLASSIFIER_TRIALS.md#accuracy-priority-update)
+records the subsequent article-type and gender selections. The earlier lighting and calibration run is
+recorded in [CLASSIFIER_IMPROVEMENTS.md](CLASSIFIER_IMPROVEMENTS.md). Both preserve the
+lecturer's dataset and frozen partitions. Tasks 1–3 retain their earlier training
+outputs; rerunning their export cells overwrites the follow-up checkpoints.
+Task 4 has now been executed and tested through the browser; see
+[TASK4_RESULTS.md](TASK4_RESULTS.md) for retrieval results and observed classifier errors.
+
+**Task 0/4 update:** Task 0 validates existing frozen data without rewriting the
+split. Task 4 now uses normalized HOG/HSV features with 75% shape / 25% colour
+weighting and cosine search, selected on validation. Test precision@5 is 74.83%
+against the training-only gallery; the deployment index contains all 38,611 usable
+labelled catalogue images. The all-notebook runner below executes Task 4 too.
 
 Task 0 has created the shared audit, frozen split, and training-only normalization under `scripts/data/`. These handoff artifacts are versioned so every member uses the same IDs and preprocessing statistics; the private dataset itself remains ignored. Do not regenerate the split locally.
 
@@ -169,7 +183,7 @@ optional execution and verification commands, so none was removed.
 | `data_audit.py` | Task 0 audit and split validation |
 | `classification.py` | Shared Tasks 1-3 image loading and CNN training |
 | `evaluation.py` | Classifier selection, metrics and reporting |
-| `retrieval.py` | Prepared Task 4 feature extraction and retrieval metrics |
+| `retrieval.py` | Task 4 feature extraction and retrieval metrics |
 | `task1_article_type_classification.py` | Article-type prediction CLI |
 | `task2_season_classification.py` | Season prediction CLI |
 | `task3_occasion_gender_classification.py` | Gender/usage CLI and submission export |

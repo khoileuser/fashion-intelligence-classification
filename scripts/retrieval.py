@@ -1,4 +1,4 @@
-"""Feature extraction and retrieval metrics for the unexecuted Task 4 notebook."""
+"""Feature extraction and retrieval metrics for the Task 4 notebook."""
 
 import numpy as np
 from PIL import Image
