@@ -17,6 +17,55 @@ def supported_macro_f1(truth, predictions) -> float:
     ))
 
 
+def evaluate_saved_checkpoint(checkpoint_path, frame, device="cpu", batch_size=64):
+    """Re-evaluate a frozen artifact with the application's exact preprocessing.
+
+    This never fits a model or changes its checkpoint. Batching changes only
+    execution speed; label ordering and saved temperature match the web API.
+    """
+    import torch
+    from sklearn.metrics import log_loss
+    from app.server.utils.classifier import FashionClassifier, temperature_scale
+    from app.server.utils.handcrafted import handcrafted_feature
+    from app.server.utils.image_preprocessor import image_tensor
+
+    predictor = FashionClassifier(checkpoint_path, device=device)
+    if predictor.members is not None:
+        raise ValueError("This notebook refresh expects a single selected classifier")
+    labels = predictor.labels
+    truth = np.asarray([labels.index(label) for label in frame[predictor.target]])
+    batches = []
+    with torch.inference_mode():
+        for start in range(0, len(frame), batch_size):
+            inputs = []
+            for path in frame.image_path.iloc[start:start + batch_size]:
+                with Image.open(path) as source:
+                    if predictor.model is not None:
+                        inputs.append(image_tensor(source, predictor.image_size, predictor.mean, predictor.std))
+                    else:
+                        inputs.append(handcrafted_feature(source, predictor.feature_config))
+            if predictor.model is not None:
+                probabilities = predictor.model(torch.cat(inputs).to(predictor.device)).softmax(1).cpu().numpy()
+            else:
+                probabilities = predictor.estimator.predict_proba(np.vstack(inputs))[:, predictor.estimator_order]
+            batches.append(temperature_scale(probabilities, predictor.temperature))
+    probabilities = np.vstack(batches)
+    predictions = probabilities.argmax(1)
+    metrics = {
+        "accuracy": float(accuracy_score(truth, predictions)),
+        "macro_f1": supported_macro_f1(truth, predictions),
+        "ece": expected_calibration_error(truth, probabilities),
+        "nll": float(log_loss(truth, probabilities, labels=np.arange(len(labels)))),
+        "brier": float(np.mean(np.sum((probabilities - np.eye(len(labels))[truth]) ** 2, axis=1))),
+    }
+    # Confirm batch inference agrees with the application's single-image path.
+    for position in (0, len(frame) // 2, len(frame) - 1):
+        with Image.open(frame.image_path.iloc[position]) as source:
+            np.testing.assert_allclose(probabilities[position], predictor.predict_probabilities(source), atol=2e-5, rtol=2e-4)
+    return {"labels": labels, "truth": truth, "predictions": predictions,
+            "probabilities": probabilities, "metrics": metrics}
+
+
 def support_band_metrics(truth_labels, prediction_labels, training_counts) -> pd.DataFrame:
     """Average full-partition per-class F1 within training-frequency bands.
 

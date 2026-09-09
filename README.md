@@ -109,13 +109,15 @@ python -m unittest discover -s tests -v
 
 The verifier checks checkpoint/selection/history consistency, reproduces full validation and internal-test metrics on CPU, and writes `models/classifier_verification.json`. This is an integration reproduction of already-frozen methods, not permission to tune on the internal test set.
 
-For a clean final integration run, execute the notebooks in the following order:
+To refresh report results from the current saved checkpoints, execute the notebooks in the following order:
 
 1. `notebooks/task0_data_audit_eda.ipynb`
-2. `notebooks/task1_article_type_classification.ipynb` → `models/article_type_model.pt`
-3. `notebooks/task2_season_classification.ipynb` → `models/season_model.pt`
-4. `notebooks/task3_occasion_gender_classification.ipynb` → `models/gender_model.pt` and `models/usage_model.pt`
-5. `notebooks/task4_visual_search_analysis.ipynb` → the visual-search model, embeddings, and metadata
+2. `notebooks/task1_article_type_classification.ipynb` → current article checkpoint evaluation, Section 20
+3. `notebooks/task2_season_classification.ipynb` → current season checkpoint evaluation, Section 17
+4. `notebooks/task3_occasion_gender_classification.ipynb` → current gender and usage checkpoint evaluation, Section 23
+5. `notebooks/task4_visual_search_analysis.ipynb` → repeat retrieval evaluation and verify a separately rebuilt index
+
+Tasks 1–3 default to `RUN_HISTORICAL_TRAINING = False`: they load the selected models, refresh internal-test metrics and figures, and check agreement with saved results. Their earlier experiment analyses remain labelled historical. Enabling historical training reproduces the old baseline pipeline into `.cache/historical-training/models/`; it does not reproduce the later selected trials or overwrite the application checkpoints. Task 4 rebuilds artifacts in `.cache/notebook-refresh/task4/` and compares its results with the active model. PNG plots and numerical evidence for the report are saved in `figures/`.
 
 To execute all five notebooks automatically from the repository root:
 
@@ -123,7 +125,7 @@ To execute all five notebooks automatically from the repository root:
 python scripts/run_all_notebooks.py --device cuda
 ```
 
-The runner validates the dataset layout and CUDA availability, executes notebooks sequentially, saves their outputs in place, verifies every required artifact, and stops immediately if a task fails. Using `--device cuda` prevents silent CPU fallback. Training all four tasks can take a long time. `--start-at` is only for the integrator resuming a sequential pipeline after a failure; it runs the selected task **and every later task** and may overwrite other members' artifacts:
+The runner validates the dataset layout and CUDA availability, executes notebooks sequentially, saves their outputs in place, verifies every required artifact, and stops immediately if a task fails. Using `--device cuda` prevents silent fallback for device-selecting cells; the final report evaluation explicitly uses CPU to match the checkpoint reference metrics. Retrieval feature extraction can take several minutes. `--start-at` runs the selected task **and every later task**, refreshing their notebook outputs:
 
 ```powershell
 python scripts/run_all_notebooks.py --device cuda --start-at task2
