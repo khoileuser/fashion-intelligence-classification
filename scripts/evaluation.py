@@ -7,7 +7,38 @@ import time
 import numpy as np
 import pandas as pd
 from PIL import Image, ImageEnhance, ImageFilter
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_support
+
+
+def supported_macro_f1(truth, predictions) -> float:
+    """Macro-average over labels present in the ground-truth partition."""
+    return float(f1_score(
+        truth, predictions, labels=np.unique(truth), average="macro", zero_division=0
+    ))
+
+
+def support_band_metrics(truth_labels, prediction_labels, training_counts) -> pd.DataFrame:
+    """Average full-partition per-class F1 within training-frequency bands.
+
+    Filtering test rows before computing F1 would discard false positives from
+    other bands and overstate minority-class precision.
+    """
+    labels = np.unique(truth_labels)
+    _, _, f1, support = precision_recall_fscore_support(
+        truth_labels, prediction_labels, labels=labels, zero_division=0
+    )
+    values = pd.DataFrame({"label": labels, "f1": f1, "test_images": support})
+    values["train_support"] = values.label.map(training_counts)
+    if values.train_support.isna().any() or values.train_support.le(0).any():
+        raise ValueError("Every evaluated label must have positive training support")
+    values["support_band"] = pd.cut(
+        values.train_support, bins=[0, 49, 499, np.inf],
+        labels=["tail (<50)", "medium (50-499)", "head (>=500)"],
+    )
+    return values.groupby("support_band", observed=False).agg(
+        test_images=("test_images", "sum"), evaluated_classes=("label", "size"),
+        macro_f1=("f1", "mean"),
+    )
 
 
 def ordered_estimator_probabilities(estimator, features, labels) -> np.ndarray:
@@ -123,9 +154,7 @@ def subgroup_metrics(
                 group_column: group,
                 "support": len(part),
                 "accuracy": accuracy_score(part.truth, part.prediction),
-                "macro_f1": f1_score(
-                    part.truth, part.prediction, average="macro", zero_division=0
-                ),
+                "macro_f1": supported_macro_f1(part.truth, part.prediction),
             }
         )
     if not rows:
@@ -164,7 +193,7 @@ def saved_model_robustness(
                 "variant": name,
                 "samples": len(sample),
                 "accuracy": accuracy_score(truth, predictions),
-                "macro_f1": f1_score(truth, predictions, average="macro", zero_division=0),
+                "macro_f1": supported_macro_f1(truth, predictions),
                 "mean_confidence": float(np.mean(confidence)),
                 "milliseconds_per_image": 1000 * elapsed / len(sample),
             }

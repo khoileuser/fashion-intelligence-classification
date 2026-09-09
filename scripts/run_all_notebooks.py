@@ -30,6 +30,7 @@ TASKS = (
             ROOT / "models" / "article_type_model.pt",
             ROOT / "models" / "article_type_history.csv",
             ROOT / "models" / "article_type_comparison.csv",
+            ROOT / "models" / "article_type_cnn_history.csv",
         ),
     ),
     (
@@ -39,6 +40,7 @@ TASKS = (
             ROOT / "models" / "season_model.pt",
             ROOT / "models" / "season_history.csv",
             ROOT / "models" / "season_comparison.csv",
+            ROOT / "models" / "season_cnn_history.csv",
         ),
     ),
     (
@@ -48,9 +50,11 @@ TASKS = (
             ROOT / "models" / "gender_model.pt",
             ROOT / "models" / "gender_history.csv",
             ROOT / "models" / "gender_comparison.csv",
+            ROOT / "models" / "gender_cnn_history.csv",
             ROOT / "models" / "usage_model.pt",
             ROOT / "models" / "usage_history.csv",
             ROOT / "models" / "usage_comparison.csv",
+            ROOT / "models" / "usage_cnn_history.csv",
         ),
     ),
     (

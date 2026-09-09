@@ -10,7 +10,7 @@ from PIL import Image
 
 from app.server.utils.image_preprocessor import image_tensor
 from app.server.utils.handcrafted import handcrafted_feature
-from app.server.utils.modeling import CompactCNN
+from app.server.utils.modeling import CompactCNN, SimpleCNN
 
 
 class FashionClassifier:
@@ -23,11 +23,12 @@ class FashionClassifier:
         self.target = checkpoint["target"]
         self.labels = checkpoint["labels"]
         self.model_type = checkpoint.get("model_type", "compact_cnn")
-        if self.model_type == "compact_cnn":
+        if self.model_type in {"compact_cnn", "simple_cnn"}:
             self.mean = checkpoint["mean"]
             self.std = checkpoint["std"]
             self.image_size = checkpoint.get("image_size", [96, 128])
-            self.model = CompactCNN(len(self.labels), checkpoint.get("dropout", 0.2))
+            architecture = SimpleCNN if self.model_type == "simple_cnn" else CompactCNN
+            self.model = architecture(len(self.labels), checkpoint.get("dropout", 0.2))
             self.model.load_state_dict(checkpoint["state_dict"])
             self.model.to(self.device).eval()
             self.estimator = None
@@ -45,7 +46,7 @@ class FashionClassifier:
 
     @torch.inference_mode()
     def predict(self, image: Image.Image, top_k: int = 3) -> dict:
-        if self.model_type == "compact_cnn":
+        if self.model is not None:
             tensor = image_tensor(image, self.image_size, self.mean, self.std).to(self.device)
             probabilities = self.model(tensor).softmax(dim=1)[0].cpu().numpy()
         else:

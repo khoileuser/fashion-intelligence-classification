@@ -1,5 +1,4 @@
 method,model_type,validation_accuracy,validation_macro_f1,validation_ece,complexity_parameters,epochs_run,eligible_for_selection
 majority,reference_only,0.499828708461802,0.16662859753312015,0.500171291538198,1,0,False
-hog_hsv_logistic_regression,hog_hsv_logistic_regression,0.6300102774922919,0.5889376099339445,0.08695529097561644,5140,0,True
-cnn_ordinary,compact_cnn,0.7321000342583076,0.7103451628699453,0.016017848807640716,298756,35,True
-cnn_weighted,compact_cnn,0.5142171976704351,0.5035682651695288,0.1443951965889403,298756,14,True
+hog_hsv_logistic_regression,hog_hsv_logistic_regression,0.6289825282631039,0.5877104790219029,0.08865957968281571,5140,0,True
+cnn_ordinary,simple_cnn,0.7178828365878726,0.700885390431276,0.019206724741884434,159876,28,True

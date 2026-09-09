@@ -25,7 +25,7 @@ fashion-intelligence-classification/
 `-- requirements.txt         # Notebook/training environment
 ```
 
-There is no installable modelling package, YAML configuration hierarchy, or separate artifacts directory. Each modelling notebook visibly defines its data pipeline, model, training loop, evaluation, and saved output.
+There is no installable modelling package, YAML configuration hierarchy, or separate artifacts directory. Each classifier notebook presents its data, architecture, training call, comparison, evaluation and saved output. The plain CNN and ordinary training loop are shared in `app/server/utils/modeling.py` and `scripts/classification.py` so training and inference use the same implementation.
 
 ## Model development
 
@@ -75,9 +75,25 @@ The image filename must match the `id` column in its CSV. The dataset contents a
 
 ## Produce the application models
 
+**Task 0/4 update:** Task 0 now validates existing frozen data without rewriting
+the split. Task 4's simpler fixed-feature cosine-search notebook is prepared but
+**not executed**; current search artifacts still belong to the previous neural
+encoder. Its new performance and API integration remain unverified. See
+[the Task 0/4 change record](docs/TASK0_TASK4_SIMPLIFICATION.md). The all-notebook
+runner below will execute Task 4 too, so use it only when that run is intended.
+
 Task 0 has created the shared audit, frozen split, and training-only normalization under `scripts/data/`. These handoff artifacts are versioned so every member uses the same IDs and preprocessing statistics; the private dataset itself remains ignored. Do not regenerate the split locally.
 
-The classifier checkpoints currently present under `models/` are **prototype/mock artifacts used for application development**. They are loadable, but they are not accepted final assignment models and must be replaced by the responsible classifier owners after controlled investigation and analysis. Final classifier artifacts may contain either the shared compact CNN or the fitted HOG+HSV logistic-regression pipeline; both follow `docs/CLASSIFIER_CONTRACT.md` and are supported by the API.
+Tasks 1-3 now compare a HOG+HSV logistic-regression baseline with one plain three-block CNN per target, alongside a majority reference. Training uses one shared readable PyTorch loop and ordinary cross-entropy; there are no residual blocks or loss-mode searches in these notebooks. The API supports the selected models and legacy compact-CNN checkpoints. See [the simplification record](docs/SIMPLIFICATION_EXPERIMENT.md) for current results, before/after comparisons and the disclosure that this is a follow-up after earlier test exposure. The [earlier correction record](docs/TASKS_1_3_REVIEW_FIXES.md) remains historical evidence.
+
+To verify the frozen classifiers without training or changing model selection:
+
+```powershell
+python scripts/verify_classifier_artifacts.py
+python -m unittest discover -s tests -v
+```
+
+The verifier checks checkpoint/selection/history consistency, reproduces full validation and internal-test metrics on CPU, and writes `models/classifier_verification.json`. This is an integration reproduction of already-frozen methods, not permission to tune on the internal test set.
 
 For a clean final integration run, execute the notebooks in the following order:
 
@@ -139,6 +155,30 @@ python scripts/task3_occasion_gender_classification.py --image path\to\image.jpg
 python scripts/task4_visual_search.py path\to\image.jpg --top-k 5
 python scripts/task3_occasion_gender_classification.py --submission
 ```
+
+### Scripts and their roles
+
+All four task-specific scripts are retained. Task 1 and Task 2 keep their original
+single-image commands; Task 3 predicts gender/usage and generates the submission;
+Task 4 provides visual search. The remaining helpers support the notebooks or
+optional execution and verification commands, so none was removed.
+
+| Script | Why it remains |
+|---|---|
+| `preprocessing.py` | Dataset loading, frozen splits and image preprocessing |
+| `data_audit.py` | Task 0 audit and split validation |
+| `classification.py` | Shared Tasks 1-3 image loading and CNN training |
+| `evaluation.py` | Classifier selection, metrics and reporting |
+| `retrieval.py` | Prepared Task 4 feature extraction and retrieval metrics |
+| `task1_article_type_classification.py` | Article-type prediction CLI |
+| `task2_season_classification.py` | Season prediction CLI |
+| `task3_occasion_gender_classification.py` | Gender/usage CLI and submission export |
+| `task4_visual_search.py` | Visual-search CLI |
+| `run_all_notebooks.py` | Optional full-pipeline execution command |
+| `verify_classifier_artifacts.py` | Optional verification of saved classifiers without retraining |
+
+Keep `scripts/data/`: it contains the frozen audit, split and normalization used
+by the notebooks. Task 4 was not executed as part of this cleanup.
 
 ## Run the web application locally
 

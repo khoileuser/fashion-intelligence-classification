@@ -1,9 +1,39 @@
-"""Compact residual architectures duplicated in the assignment notebooks."""
+"""Image models shared by training and inference."""
 
 from __future__ import annotations
 
 import torch
 from torch import nn
+
+
+class SimpleCNN(nn.Module):
+    """Three convolution blocks, followed by a small classification head."""
+
+    def __init__(self, num_classes: int, dropout: float = 0.2):
+        super().__init__()
+        self.layers = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(32, 64, kernel_size=3, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.AdaptiveAvgPool2d((2, 2)),
+            nn.Flatten(),
+            nn.Linear(128 * 2 * 2, 128),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(128, num_classes),
+        )
+
+    def forward(self, images: torch.Tensor) -> torch.Tensor:
+        return self.layers(images)
 
 
 class ResidualBlock(nn.Module):

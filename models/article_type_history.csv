@@ -1,2 +1,2 @@
 method,model_type,validation_accuracy,validation_macro_f1,validation_ece,complexity_parameters,epochs_run,eligible_for_selection
-hog_hsv_logistic_regression,hog_hsv_logistic_regression,0.7889421431016775,0.6088882578326256,0.11697500129955671,159340,0,True
+hog_hsv_logistic_regression,hog_hsv_logistic_regression,0.7887709688462855,0.6096283006006169,0.11777901724465538,159340,0,True
