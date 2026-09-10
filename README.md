@@ -1,6 +1,6 @@
 # Fashion Intelligence Classification
 
-Notebook-first machine-learning project for the four assignment tasks: article type, season, occasion and gender, and visual search. The modelling layout follows the supplied rice-plant-disease project; the deployable application is grouped separately under `app/`.
+Notebook-first machine-learning project for the four assignment tasks: article type, season, occasion and gender, and visual search.
 
 ## Structure
 
@@ -10,7 +10,6 @@ fashion-intelligence-classification/
 |   |-- client/              # Next.js web interface and API proxy
 |   `-- server/              # FastAPI service and inference utilities
 |-- dataset/                 # Private train/test dataset copied locally
-|-- docs/                    # Team handoff, experiment, and deployment notes
 |-- models/                  # Flat model files created by notebooks
 |-- notebooks/
 |   |-- task0_data_audit_eda.ipynb
@@ -25,11 +24,9 @@ fashion-intelligence-classification/
 `-- requirements.txt         # Notebook/training environment
 ```
 
-There is no installable modelling package, YAML configuration hierarchy, or separate artifacts directory. Each classifier notebook presents its data, architecture, training call, comparison, evaluation and saved output. The plain CNN and ordinary training loop are shared in `app/server/utils/modeling.py` and `scripts/classification.py` so training and inference use the same implementation.
-
 ## Model development
 
-Use Python 3.12 and install the CUDA-compatible PyTorch build for the team machine if required.
+Use Python 3.12 and install the CUDA-compatible PyTorch build.
 
 ```powershell
 python -m venv venv
