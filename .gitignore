@@ -267,6 +267,7 @@ A2_FashionDataset.zip
 !/dataset/README.md
 
 # Generated artifacts (directory placeholders remain tracked)
+models/search_candidate/
 scripts/data/*.csv
 scripts/data/*.json
 # models/*.pt

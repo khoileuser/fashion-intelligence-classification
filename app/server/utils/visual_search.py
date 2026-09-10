@@ -35,7 +35,7 @@ class FashionVisualSearch:
             self.model = None
             self.feature_type = checkpoint['feature_type']
             self.feature_config = checkpoint['feature_config']
-            if self.feature_type not in {'pixel', 'hog_hsv'}:
+            if self.feature_type not in {'pixel', 'hog_hsv', 'garment_hog_colour'}:
                 raise ValueError(f'Unsupported search feature: {self.feature_type!r}')
             feature_dimensions = checkpoint['embedding_dim']
         elif self.model_type == 'contrastive_encoder':
@@ -58,7 +58,16 @@ class FashionVisualSearch:
             raise ValueError('Gallery features must be finite')
 
     @torch.inference_mode()
-    def search(self, image: Image.Image, top_k: int = 5) -> list[dict]:
+    def search(
+        self, image: Image.Image, top_k: int = 5,
+        preferred_article_type: str | None = None,
+    ) -> list[dict]:
+        """Rank the preferred article type first, then cosine within each group.
+
+        Without a preference this remains pure visual retrieval for notebook
+        evaluation. Other types fill spare slots when the preferred type is rare.
+        Scores always retain their original cosine meaning.
+        """
         if top_k < 1:
             raise ValueError('top_k must be positive')
         if self.model is None:
@@ -67,7 +76,11 @@ class FashionVisualSearch:
             tensor = image_tensor(image, self.image_size, self.mean, self.std).to(self.device)
             query = self.model(tensor)[0].cpu().numpy()
         scores = self.embeddings @ query
-        indices = np.argsort(-scores, kind='stable')[: min(top_k, len(scores))]
+        indices = np.argsort(-scores, kind='stable')
+        if preferred_article_type:
+            matches = self.metadata['articleType'].eq(preferred_article_type).to_numpy()
+            indices = np.concatenate([indices[matches[indices]], indices[~matches[indices]]])
+        indices = indices[: min(top_k, len(scores))]
         results = []
         for index in indices:
             item = {

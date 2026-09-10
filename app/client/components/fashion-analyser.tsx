@@ -344,7 +344,7 @@ export function FashionAnalyser() {
             <div className="mb-6 mt-16 flex items-end justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-bold tracking-tight">Similar catalogue items</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Products with the closest visual features.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Predicted article type first, then visual similarity.</p>
               </div>
               <p className="text-sm text-muted-foreground">{result.similar_items.length} matches</p>
             </div>

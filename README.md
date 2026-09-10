@@ -70,6 +70,53 @@ dataset/
 
 ## Run the web application locally
 
+### Visual-search index
+
+The web application prioritizes the predicted article type across the whole
+catalogue, then sorts those items by visual similarity. If there are fewer than
+the requested number, other article types fill the remaining slots in similarity
+order. Both `/analyse` and `/search` use this policy, including predictions marked
+for review. Scores remain cosine similarities, so a preferred-type item can rank
+above a different type with a higher score. Notebook retrieval metrics below
+evaluate the visual features without this application-level article preference.
+
+Search combines HOG shape features with joint HSV colour histograms. For colour,
+it suppresses a plain background when the image corners agree and gives extra
+weight to the central region. This reduces matches driven by white backgrounds,
+faces and trousers in modelled topwear photos. It is a product-photo heuristic,
+not garment segmentation; complex scenes and off-centre garments can still give
+weak matches. Similarity is a cosine score, not a match probability.
+The current representation assigns 80% of the score to shape and 20% to the
+independently normalized colour features.
+
+Task 4 compares the original features with this representation. Selection now
+uses validation agreement on **both article type and base colour**, keeping
+methods within three percentage points of the original article-only precision,
+with article type agreement as a tie-breaker. These catalogue labels are proxies for visual
+similarity, not human judgements of pattern or style.
+
+Across 5,842 validation queries against 27,051 training images, the updated index
+improves top-five article-and-colour agreement from 20.0% to 33.1%. Article-only
+precision changes from 75.1% to 72.6%. The shape weight was selected using this
+validation split; these are development results, not independent test results.
+
+To rebuild just the search index using the existing gallery and frozen splits:
+
+```powershell
+.\venv\Scripts\python.exe scripts\rebuild_visual_search.py --validation-sample 0
+```
+
+This writes candidate artifacts and a before/after evaluation to
+`models/search_candidate/`. After reviewing the evaluation, copy its
+`visual_search_model.pt`, `visual_search_embeddings.npy`,
+`visual_search_metadata.csv`, `visual_search_history.csv` and
+`visual_search_colour_evaluation.json` into `models/` together, then restart
+FastAPI. For Docker, rebuild and recreate the server because model artifacts
+are copied into its image. The checked-in colour evaluation documents the
+current index; the original Task 4 metrics do not describe this new representation.
+
+### Start the services
+
 Start FastAPI from the repository root:
 
 ```powershell
