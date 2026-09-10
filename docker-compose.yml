@@ -16,10 +16,6 @@ services:
       FASHION_DATA_ROOT: /workspace/dataset
     volumes:
       - type: bind
-        source: ${FASHION_MODELS_PATH:-./models}
-        target: /workspace/models
-        read_only: true
-      - type: bind
         source: ${FASHION_DATA_ROOT:-./dataset}
         target: /workspace/dataset
         read_only: true

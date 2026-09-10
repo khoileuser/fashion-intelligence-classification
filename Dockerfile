@@ -1,5 +1,20 @@
 # syntax=docker/dockerfile:1.7
 
+FROM debian:bookworm-slim AS model-assets
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y ca-certificates git git-lfs \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /assets
+COPY models/article_type_model.pt models/season_model.pt models/gender_model.pt models/usage_model.pt models/visual_search_model.pt models/visual_search_embeddings.npy models/visual_search_metadata.csv ./models/
+# Portainer checkouts may contain LFS pointers. Smudge downloads the exact
+# referenced object; already downloaded files pass through unchanged.
+RUN git init \
+    && git remote add origin https://github.com/khoileuser/fashion-intelligence-classification.git \
+    && for file in models/*; do \
+         git lfs smudge "$file" < "$file" > /tmp/model-asset \
+         && mv /tmp/model-asset "$file" || exit 1; \
+       done
+
 FROM python:3.12-slim AS server
 
 ARG PYTORCH_INDEX_URL=https://download.pytorch.org/whl/cpu
@@ -23,6 +38,7 @@ RUN useradd --create-home --uid 10001 fashion \
     && chown -R fashion:fashion /workspace
 
 COPY --chown=fashion:fashion app/server app/server
+COPY --from=model-assets --chown=fashion:fashion /assets/models /workspace/models
 
 USER fashion
 EXPOSE 8000

@@ -225,3 +225,9 @@ docker compose ps
 ```
 
 The web interface is published on port `3000`. The API is bound to host loopback on port `8000` by default because the client reaches it over the Compose network. Set `API_BIND=0.0.0.0` only when direct remote API access is required.
+
+The server image includes the seven inference files from `models/`; no models bind mount or `FASHION_MODELS_PATH` is needed. A separate build stage resolves Git LFS pointers against this public GitHub repository, downloading the exact referenced objects when necessary. Git and Git LFS are not installed in the runtime image. Push model updates before rebuilding in Portainer; downloading an unpublished LFS object will fail the build.
+
+The dataset mount supplies the original product photos displayed in visual-search results. Classification and similarity ranking use the saved checkpoints, embeddings, and metadata and do not need the training dataset at runtime. For gallery photos, set `FASHION_DATA_ROOT` to an absolute folder on the Docker host containing `train/images_train/<id>.jpg` or `images/<id>.jpg`. The CSVs are not needed by the deployed app. Without these photos, predictions and search rankings still work, but gallery image requests return 404. The lecturer-provided dataset stays outside the image and GitHub.
+
+After pulling these deployment changes in Portainer, rebuild the server image and recreate the stack. Remove any old `/workspace/models` mount from a manually edited stack, since it would hide the models included in the image.
