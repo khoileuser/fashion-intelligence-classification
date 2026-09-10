@@ -32,7 +32,7 @@ The labelled CSV contains 38,617 unique IDs. Five images are missing and one ava
 
 The usable data contain 124 article categories, four seasons, five audience labels and nine usage labels. Image exclusion removes all usable examples of `Suits`, so the article classifier cannot learn that original category. Twenty season values and one usage value are blank.
 
-Class imbalance is substantial: on the initial validation split, majority-only accuracy is 17.75% for article type, 49.98% for season, 54.06% for audience and 77.22% for usage. Consequently, high usage accuracy alone provides weak evidence of broad recognition. Sparse categories also make per-class estimates unstable. We therefore report the mean of per-class F1 scores, distinguishing it from alternative definitions of macro F1 discussed by Opitz and Burst [4].
+Class imbalance is substantial: on the initial validation split, majority-only accuracy is 17.75% for article type, 49.98% for season, 54.06% for audience and 77.22% for usage. Consequently, high usage accuracy alone provides weak evidence of broad recognition. Sparse categories also make per-class estimates unstable. We therefore report the mean of per-class F1 scores, distinguishing it from alternative definitions of macro F1 discussed by Opitz and Burst [4]. The target-label distributions in Fig. A1 illustrate the imbalance across the four classification targets.
 
 ### 2.2. Data Preprocessing
 
@@ -65,7 +65,7 @@ The article classifier predicts 124 categories using multinomial logistic regres
 | Small CNN                                      | Validation       |   82.45% |   0.5347 |
 | Final logistic regression; brightness training | Test             |   80.27% |   0.6302 |
 
-In the initial comparison, logistic regression sacrifices accuracy relative to the CNN for substantially stronger macro F1. This trade-off supports the simpler model for a target with many imbalanced categories. Separately normalized shape/colour features and inference-time brightness averaging were also investigated but rejected after validation.
+In the initial comparison, logistic regression sacrifices accuracy relative to the CNN for substantially stronger macro F1. This trade-off supports the simpler model for a target with many imbalanced categories. Separately normalized shape/colour features and inference-time brightness averaging were also investigated but rejected after validation. The current frequent-class confusion matrix in Fig. B1 shows errors among article categories, with predictions outside the displayed classes retained in an Other predicted class column.
 
 Article training uses brightness factors 0.9, 1.0 and 1.1, with each view assigned one-third weight. Compared with the immediately preceding checkpoint, accuracy increases from 80.12% to 80.27% and macro F1 from 0.6241 to 0.6302, while ECE worsens from 0.0105 to 0.0160. This modest calibration cost was accepted because classification was prioritized. Nevertheless, group-bootstrap intervals for the accuracy and F1 changes include zero: the observed gain is uncertain.
 
@@ -82,7 +82,7 @@ Season prediction uses a four-output CNN with three convolutional blocks contain
 | Small CNN                     | Validation       |   71.79% |   0.7009 |
 | Final ordinary CNN            | Test             |   71.29% |   0.6934 |
 
-The CNN improves both initial validation metrics over logistic regression. A fresh ordinary CNN run supplies the retained model; brightness-augmentation trials did not justify replacement. Its final ECE is 0.0282. Season remains the least accurate classification target, and visually similar products can belong to different seasons, limiting image-only prediction.
+The CNN improves both initial validation metrics over logistic regression. A fresh ordinary CNN run supplies the retained model; brightness-augmentation trials did not justify replacement. Its final ECE is 0.0282. Season remains the least accurate classification target, and visually similar products can belong to different seasons, limiting image-only prediction. The confusion matrix in Fig. B2 shows that Fall, Spring and Winter items are frequently classified as Summer.
 
 ### 3.3. Gender / Audience Classification (Task 3)
 
@@ -97,7 +97,7 @@ Audience prediction uses a separately trained CNN with the architecture and basi
 | Small CNN                           | Validation       |   86.75% |   0.7053 |
 | Final CNN; learning-rate scheduling | Test             |   87.25% |   0.6704 |
 
-The CNN outperforms logistic regression on both initial validation metrics. Compared with the preceding checkpoint on the same test partition, the selected replacement raises accuracy from 85.38% to 87.25%, while macro F1 slightly decreases from 0.6725 to 0.6704. Its final ECE is 0.0196. Mild brightness augmentation did not justify a further replacement. Higher average correctness therefore does not establish uniformly better recognition across all audience labels.
+The CNN outperforms logistic regression on both initial validation metrics. Compared with the preceding checkpoint on the same test partition, the selected replacement raises accuracy from 85.38% to 87.25%, while macro F1 slightly decreases from 0.6725 to 0.6704. Its final ECE is 0.0196. Mild brightness augmentation did not justify a further replacement. Higher average correctness therefore does not establish uniformly better recognition across all audience labels. The audience confusion matrix in Fig. B3 illustrates the remaining errors across adult, children's and Unisex labels.
 
 ### 3.4. Occasion / Usage Classification (Task 3)
 
@@ -114,7 +114,7 @@ Usage is treated as a separate nine-class prediction problem rather than combine
 
 Usage shows the clearest imbalance trade-off: the initial CNN achieves higher accuracy, but logistic regression has better macro F1. The final model's temperature is approximately 0.922, giving test ECE of 0.0191; the other classifiers retain temperature 1.0. Temperature scaling adjusts probabilities without changing the highest-scoring class [6]. Low aggregate ECE does not guarantee trustworthy individual predictions or calibration under new photographic conditions.
 
-Usage remains the weakest target by macro F1 despite its high accuracy. Several uncommon occasions have extremely limited evaluation support, and intended occasion may not be uniquely visible from a photograph.
+Usage remains the weakest target by macro F1 despite its high accuracy. Several uncommon occasions have extremely limited evaluation support, and intended occasion may not be uniquely visible from a photograph. The usage confusion matrix in Fig. B4 shows the tendency to predict Casual for several uncommon usage labels; Home has no test examples.
 
 ### 3.5. Visual Search (Task 4)
 
@@ -142,7 +142,7 @@ Qualitative results retrieve consistent handbags and briefs but confuse footwear
 
 The web application demonstrates how the models could support fashion catalogue management and product discovery. Catalogue staff can upload a product image and review suggested article, season, audience and usage labels before accepting them. Shoppers could use the same image-upload workflow to discover visually similar catalogue items without knowing the exact product name. Confidence and review indicators support human checking, while image-based retrieval provides alternatives to inspect. This design is consistent with guidance to communicate AI capabilities and the possibility of mistakes [11]. These are intended uses of a locally tested educational prototype; public deployment and evaluation on independently collected real-world photographs have not been completed.
 
-The Next.js interface calls a FastAPI backend to display four classifications, confidence and review indicators, and five similar catalogue images. It includes persistent local history and a mobile layout. After evaluation, the deployment index includes all 38,611 usable labelled images; its 1,284-dimensional embeddings occupy approximately 189 MiB. Ten warm local CPU searches on one query have a median of 73.1 ms, which is a smoke measurement rather than a load benchmark.
+The Next.js interface calls a FastAPI backend to display four classifications, confidence and review indicators, and five similar catalogue images. It includes persistent local history and a mobile layout. Figure C1 shows the application interface presenting predicted attributes, confidence indicators and visually similar catalogue items. After evaluation, the deployment index includes all 38,611 usable labelled images; its 1,284-dimensional embeddings occupy approximately 189 MiB. Ten warm local CPU searches on one query have a median of 73.1 ms, which is a smoke measurement rather than a load benchmark.
 
 Eight browser uploads verify agreement with direct inference, image loading, history persistence, mobile layout and invalid-file rejection. They also reveal classification failures. With the latest article model, a T-shirt is labelled Sweatshirts at approximately 65% confidence; its darkened version remains incorrect at approximately 82%. Review indicators identify some low-confidence or lighting-sensitive outputs but do not repair their labels. These catalogue-image checks, including retrieval self-matches, demonstrate integration rather than independent generalization.
 
@@ -154,7 +154,13 @@ DeepFashion2 combines clothing detection, landmarks, segmentation and consumer-t
 
 The implemented system is a useful educational prototype and catalogue-assistance tool. Separate model selection improves the balance between simplicity and performance, and the web interface makes errors inspectable. It is not yet supported as an unattended production classifier: usage has weak macro F1, rare categories remain difficult, and confident browser mistakes persist. Audience predictions represent catalogue labels rather than a determination of a person's identity.
 
-The literature comparison provides external context, but no independently collected image set has been evaluated. A next assessment should freeze the models and test separately sourced photographs with documented label mapping, reporting per-class results and uncertainty. For improvement, targeted training-only augmentation and limited regularization or scheduler changes are preferable first steps to increasing architecture complexity. The dataset's educational-use restriction also limits deployment beyond this assignment.
+The final choices reflect different error priorities. For article type and usage, stronger baseline macro F1 justified logistic regression despite the CNN's higher baseline accuracy. Season and audience benefited from learned CNN features on both initial validation metrics. The latest article update accepts a small ECE increase for observed accuracy and F1 gains, but its bootstrap intervals include zero; it should be treated as a modest candidate improvement rather than a proven advance. Similarly, the audience accuracy gain does not establish better minority-class recognition because test macro F1 decreases slightly. These outcomes support selecting models against explicit priorities rather than declaring one algorithm universally best.
+
+The literature comparison provides external context, but no independently collected image set has been evaluated. Grouped splitting reduces duplicate leakage, yet repeated inspection during development limits the independence of the reported test results. Classes absent from test cannot be assessed, and estimates based on only a few examples are unstable. Catalogue self-matches in the application also provide no evidence of performance on unseen consumer photographs.
+
+A next assessment should freeze all checkpoints, temperatures and review thresholds before collecting a separate evaluation set. It should cover common and uncommon categories, different backgrounds, lighting and viewpoints, with documented label mapping and ambiguous labels recorded explicitly. Report class support, per-class F1, accuracy and calibration, together with the proportion of predictions flagged for review and accuracy among unflagged predictions. Retrieval should additionally receive human similarity judgments, distinguishing category agreement from colour, style and product-identity matches. This assessment remains proposed work, not a completed experiment.
+
+For improvement, targeted training-only augmentation and limited regularization or scheduler changes are preferable first steps to increasing architecture complexity. The dataset's educational-use restriction also limits deployment beyond this assignment.
 
 <!-- Main report ends here. Insert a page break before references. -->
 
@@ -183,6 +189,8 @@ The literature comparison provides external context, but no independently collec
 [11] S. Amershi _et al._, "Guidelines for human-AI interaction," in _Proc. CHI Conf. Human Factors in Computing Systems_, 2019, pp. 1–13. [Online]. Available: [Paper](https://www.microsoft.com/en-us/research/publication/guidelines-for-human-ai-interaction/).
 
 <!-- Supporting appendices begin below. Keep the combined appendices within two pages. -->
+
+<!-- Figure references in the main text follow the proposed Word layout: A1 = target distributions; B1 = article confusion; B2 = season confusion; B3 = audience confusion; B4 = usage confusion; C1 = web application screenshot. Match these labels to your final Word captions. The supporting tables below predate your figure layout and can be replaced with the figures you have already arranged; appendix letters do not require separate pages. -->
 
 ## Appendix A. Supporting data and probability metrics
 

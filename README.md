@@ -109,15 +109,15 @@ python -m unittest discover -s tests -v
 
 The verifier checks checkpoint/selection/history consistency, reproduces full validation and internal-test metrics on CPU, and writes `models/classifier_verification.json`. This is an integration reproduction of already-frozen methods, not permission to tune on the internal test set.
 
-To refresh report results from the current saved checkpoints, execute the notebooks in the following order:
+To train the models and refresh report results, execute the notebooks in the following order:
 
 1. `notebooks/task0_data_audit_eda.ipynb`
-2. `notebooks/task1_article_type_classification.ipynb` → current article checkpoint evaluation, Section 20
-3. `notebooks/task2_season_classification.ipynb` → current season checkpoint evaluation, Section 17
-4. `notebooks/task3_occasion_gender_classification.ipynb` → current gender and usage checkpoint evaluation, Section 23
-5. `notebooks/task4_visual_search_analysis.ipynb` → repeat retrieval evaluation and verify a separately rebuilt index
+2. `notebooks/task1_article_type_classification.ipynb` → article training, model replacement and figures, Section 20
+3. `notebooks/task2_season_classification.ipynb` → season training, model replacement and figures, Section 17
+4. `notebooks/task3_occasion_gender_classification.ipynb` → gender/usage training, model replacement and figures, Section 23
+5. `notebooks/task4_visual_search_analysis.ipynb` → retrieval evaluation and replacement of the deployment index
 
-Tasks 1–3 default to `RUN_HISTORICAL_TRAINING = False`: they load the selected models, refresh internal-test metrics and figures, and check agreement with saved results. Their earlier experiment analyses remain labelled historical. Enabling historical training reproduces the old baseline pipeline into `.cache/historical-training/models/`; it does not reproduce the later selected trials or overwrite the application checkpoints. Task 4 rebuilds artifacts in `.cache/notebook-refresh/task4/` and compares its results with the active model. PNG plots and numerical evidence for the report are saved in `figures/`.
+Every Run All executes baseline comparisons, trains the selected final recipes, and replaces checkpoints and histories directly in `models/`. Final recipes are article HOG+HSV logistic regression with brightness training, an ordinary season CNN, a scheduled audience CNN, and usage HOG+HSV logistic regression. Calibration and review thresholds are refitted on validation groups before test evaluation. Task 4 replaces the search index and related artifacts in `models/`. Figures and numerical report evidence go to `figures/`; notebook training and retrieval do not write to `.cache`. A fresh training run can change the measured results, so update the report from its new outputs.
 
 To execute all five notebooks automatically from the repository root:
 
@@ -125,7 +125,7 @@ To execute all five notebooks automatically from the repository root:
 python scripts/run_all_notebooks.py --device cuda
 ```
 
-The runner validates the dataset layout and CUDA availability, executes notebooks sequentially, saves their outputs in place, verifies every required artifact, and stops immediately if a task fails. Using `--device cuda` prevents silent fallback for device-selecting cells; the final report evaluation explicitly uses CPU to match the checkpoint reference metrics. Retrieval feature extraction can take several minutes. `--start-at` runs the selected task **and every later task**, refreshing their notebook outputs:
+The runner validates the dataset layout and CUDA availability, executes notebooks sequentially, saves their outputs in place, verifies every required artifact, and stops immediately if a task fails. Using `--device cuda` prevents silent fallback for device-selecting cells; the final report evaluation explicitly uses CPU to match the checkpoint reference metrics. Full baseline and final-model training can take substantially longer than checkpoint evaluation; retrieval feature extraction also takes several minutes. `--start-at` runs the selected task **and every later task**, refreshing their notebook outputs:
 
 ```powershell
 python scripts/run_all_notebooks.py --device cuda --start-at task2

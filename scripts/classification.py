@@ -102,11 +102,14 @@ def run_epoch(model, loader, criterion, device, optimizer=None):
     }
 
 
-def train_cnn(model, train_loader, validation_loader, device, max_epochs=30, patience=5):
+def train_cnn(model, train_loader, validation_loader, device, max_epochs=30, patience=5, schedule=False):
     """Ordinary cross-entropy + Adam; restore the best validation macro-F1 epoch."""
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='max', factor=0.5, patience=2,
+    ) if schedule else None
     history = []
     best_f1 = -1.0
     best_state = None
@@ -115,12 +118,14 @@ def train_cnn(model, train_loader, validation_loader, device, max_epochs=30, pat
         started = time.perf_counter()
         train = run_epoch(model, train_loader, criterion, device, optimizer)
         validation = run_epoch(model, validation_loader, criterion, device)
-        row = {'epoch': epoch, 'loss_mode': 'ordinary'}
+        row = {'epoch': epoch, 'loss_mode': 'ordinary', 'lr': optimizer.param_groups[0]['lr']}
         for name, value in train.items():
             row[f'train_{name}'] = value
         for name, value in validation.items():
             row[f'validation_{name}'] = value
         history.append(row)
+        if scheduler is not None:
+            scheduler.step(validation['macro_f1'])
         print(f"Epoch {epoch:02d}: train F1={train['macro_f1']:.4f}, "
               f"validation F1={validation['macro_f1']:.4f}, "
               f"{time.perf_counter() - started:.1f}s", flush=True)
@@ -134,6 +139,108 @@ def train_cnn(model, train_loader, validation_loader, device, max_epochs=30, pat
                 break
     model.load_state_dict(best_state)
     return model, pd.DataFrame(history)
+
+
+def fit_final_classifier(target, train_frame, validation_frame, normalisation, device):
+    """Train the selected recipe from scratch, using validation only for tuning.
+
+    Returns a checkpoint and history in memory. The notebook evaluates it on
+    test and writes it to models/. No feature caches or checkpoint backups.
+    """
+    from PIL import ImageEnhance
+    from scipy.optimize import minimize_scalar
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import log_loss
+    from sklearn.model_selection import GroupShuffleSplit
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler
+    from app.server.utils.classifier import temperature_scale
+    from app.server.utils.handcrafted import DEFAULT_FEATURE_CONFIG
+    from app.server.utils.modeling import SimpleCNN
+    from scripts.evaluation import evaluate_saved_checkpoint
+    from scripts.preprocessing import seed_everything
+
+    if target not in {'articleType', 'season', 'gender', 'usage'}:
+        raise ValueError(f'Unsupported target: {target}')
+    seed_everything(SEED)
+    torch.manual_seed(SEED)
+    labels = sorted(train_frame[target].unique())
+    selection_ids, rest_ids = next(GroupShuffleSplit(
+        n_splits=1, train_size=0.5, random_state=SEED,
+    ).split(validation_frame, groups=validation_frame.group_key))
+    selection = validation_frame.iloc[selection_ids]
+    rest = validation_frame.iloc[rest_ids]
+    calibration_ids, policy_ids = next(GroupShuffleSplit(
+        n_splits=1, train_size=0.5, random_state=SEED + 1,
+    ).split(rest, groups=rest.group_key))
+    calibration, policy = rest.iloc[calibration_ids], rest.iloc[policy_ids]
+    checkpoint = {'target': target, 'labels': labels, 'temperature': 1.0,
+                  'seed': SEED, 'experiment': 'selected_recipe_notebook_training',
+                  'validation_scope': 'selection_view_only',
+                  'selection_metric': 'fixed_recipe_from_prior_validation_experiments'}
+    if target in {'articleType', 'usage'}:
+        factors = (0.9, 1.0, 1.1) if target == 'articleType' else (1.0,)
+        features = []
+        for factor in factors:
+            for path in train_frame.image_path:
+                with Image.open(path) as source:
+                    image = ImageEnhance.Brightness(source.convert('RGB')).enhance(factor)
+                    features.append(handcrafted_feature(image, DEFAULT_FEATURE_CONFIG))
+        features = np.vstack(features)
+        counts = train_frame[target].value_counts()
+        inverse_sqrt = 1 / np.sqrt(counts)
+        weights = (inverse_sqrt / inverse_sqrt.mean()).to_dict()
+        estimator = make_pipeline(StandardScaler(), LogisticRegression(
+            C=0.1, class_weight=weights, max_iter=1500, random_state=SEED, solver='lbfgs',
+        ))
+        estimator.fit(features, np.tile(train_frame[target].to_numpy(), len(factors)),
+                      logisticregression__sample_weight=np.full(len(features), 1 / len(factors)))
+        checkpoint.update(model_type='hog_hsv_logistic_regression', estimator=estimator,
+                          feature_config=dict(DEFAULT_FEATURE_CONFIG),
+                          training_config={'C': 0.1, 'weights': 'sqrt', 'brightness_factors': list(factors)})
+        history = None
+    else:
+        model, history = train_cnn(
+            SimpleCNN(len(labels)),
+            make_loader(train_frame, target, labels, normalisation, training=True),
+            make_loader(selection, target, labels, normalisation),
+            device, max_epochs=30, patience=7, schedule=target == 'gender',
+        )
+        checkpoint.update(model_type='simple_cnn', state_dict=model.cpu().state_dict(),
+                          mean=normalisation['mean'], std=normalisation['std'],
+                          image_size=list(IMAGE_SIZE), dropout=0.2,
+                          training_config={'schedule': target == 'gender', 'max_epochs': 30, 'patience': 7})
+    # Fit temperature only on calibration groups; retain it only if policy NLL
+    # improves without worsening ECE. Policy groups also determine review flags.
+    cal = evaluate_saved_checkpoint(checkpoint, calibration)
+    policy_raw = evaluate_saved_checkpoint(checkpoint, policy)
+    fitted = minimize_scalar(
+        lambda log_t: log_loss(cal['truth'], temperature_scale(cal['probabilities'], np.exp(log_t)),
+                               labels=np.arange(len(labels))),
+        bounds=(np.log(0.25), np.log(10)), method='bounded',
+    )
+    temperature = float(np.exp(fitted.x))
+    scaled = temperature_scale(policy_raw['probabilities'], temperature)
+    if (log_loss(policy_raw['truth'], scaled, labels=np.arange(len(labels))) < policy_raw['metrics']['nll']
+            and expected_calibration_error(policy_raw['truth'], scaled) <= policy_raw['metrics']['ece']):
+        checkpoint['temperature'] = temperature
+    else:
+        scaled = policy_raw['probabilities']
+    threshold = None
+    for value in np.round(np.arange(0.50, 1.00, 0.01), 2):
+        accepted = scaled.max(1) >= value
+        if accepted.sum() >= 100 and np.mean(scaled.argmax(1)[accepted] == policy_raw['truth'][accepted]) >= 0.90:
+            threshold = float(value)
+            break
+    checkpoint['review_policy'] = {'threshold': threshold, 'target_accuracy': 0.90,
+                                   'minimum_policy_samples': 100,
+                                   'brightness_stability': target == 'articleType'}
+    result = evaluate_saved_checkpoint(checkpoint, selection)
+    checkpoint['validation_metrics'] = {f'validation_{key}': value for key, value in result['metrics'].items()}
+    checkpoint['best_validation_macro_f1'] = result['metrics']['macro_f1']
+    if history is None:
+        history = pd.DataFrame([{'method': 'selected_hog_hsv_recipe', **checkpoint['validation_metrics']}])
+    return checkpoint, history
 
 
 @torch.inference_mode()
