@@ -65,36 +65,30 @@ def seed_everything(seed: int = SEED) -> None:
     np.random.seed(seed)
 
 
-def select_torch_device():
-    """Select CPU/CUDA from FASHION_DEVICE and report the active accelerator."""
-    import torch
-
-    requested = os.environ.get("FASHION_DEVICE", "auto").strip().lower()
+def select_tensorflow_device():
+    """Honor FASHION_DEVICE; current Windows CUDA training requires WSL2."""
+    import tensorflow as tf
+    requested = os.environ.get("FASHION_DEVICE", "auto").lower()
     if requested not in {"auto", "cpu", "cuda"}:
-        raise ValueError("FASHION_DEVICE must be one of: auto, cpu, cuda")
-
-    cuda_available = torch.cuda.is_available()
-    if requested == "cuda" and not cuda_available:
-        raise RuntimeError(
-            "CUDA was requested but this Python environment cannot use it. "
-            f"PyTorch={torch.__version__}, CUDA build={torch.version.cuda}. "
-            "Install requirements-cuda.txt and restart the Jupyter kernel."
-        )
-
-    device = torch.device(
-        "cuda" if cuda_available and requested != "cpu" else "cpu"
-    )
-    if device.type == "cuda":
-        torch.backends.cudnn.benchmark = True
-        print(
-            f"Using CUDA: {torch.cuda.get_device_name(0)} | "
-            f"PyTorch {torch.__version__} | CUDA {torch.version.cuda}"
-        )
+        raise ValueError("FASHION_DEVICE must be auto, cpu or cuda")
+    gpus = tf.config.list_physical_devices("GPU")
+    if requested == "cpu":
+        try:
+            tf.config.set_visible_devices([], "GPU")
+        except RuntimeError:
+            if tf.config.get_visible_devices("GPU"):
+                raise RuntimeError("Restart the kernel before switching to CPU")
+        device = "/CPU:0"
+    elif requested == "cuda" and not gpus:
+        raise RuntimeError("TensorFlow cannot see a GPU. Use Linux/WSL2 with requirements-cuda.txt, or select cpu.")
     else:
-        print(
-            f"Using CPU | PyTorch {torch.__version__} | "
-            f"CUDA build {torch.version.cuda}"
-        )
+        for gpu in gpus:
+            try:
+                tf.config.experimental.set_memory_growth(gpu, True)
+            except RuntimeError:
+                pass  # The notebook may already have initialized this GPU.
+        device = "/GPU:0" if gpus and tf.config.get_visible_devices("GPU") else "/CPU:0"
+    print(f"TensorFlow {tf.__version__}: {device}")
     return device
 
 
@@ -152,14 +146,14 @@ def preprocess_image(
     mean: list[float] | None = None,
     std: list[float] | None = None,
 ) -> np.ndarray:
-    """Convert an image to a resized channel-first float array."""
+    """Convert an image to a resized channel-last float array."""
     image = remove_transparency(image).resize(size, Image.Resampling.BILINEAR)
     array = np.asarray(image, dtype=np.float32) / 255.0
     if mean is not None and std is not None:
         array = (array - np.asarray(mean, dtype=np.float32)) / np.asarray(
             std, dtype=np.float32
         )
-    return np.transpose(array, (2, 0, 1))
+    return array
 
 
 def load_splits(path: str | Path = SPLIT_PATH) -> pd.DataFrame:

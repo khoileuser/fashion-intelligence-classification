@@ -5,7 +5,7 @@ RUN apt-get update \
     && apt-get install --no-install-recommends -y ca-certificates git git-lfs \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /assets
-COPY models/article_type_model.pt models/season_model.pt models/gender_model.pt models/usage_model.pt models/visual_search_model.pt models/visual_search_embeddings.npy models/visual_search_metadata.csv ./models/
+COPY models/ ./models/
 # Portainer checkouts may contain LFS pointers. Smudge downloads the exact
 # referenced object anonymously from the public repository.
 RUN git init -q \
@@ -19,7 +19,6 @@ RUN git init -q \
 
 FROM python:3.12-slim AS server
 
-ARG PYTORCH_INDEX_URL=https://download.pytorch.org/whl/cpu
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     MODEL_DIR=/workspace/models \
@@ -32,8 +31,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY app/server/requirements.txt /tmp/server-requirements.txt
-RUN python -m pip install --no-cache-dir --index-url "${PYTORCH_INDEX_URL}" torch \
-    && python -m pip install --no-cache-dir -r /tmp/server-requirements.txt
+RUN python -m pip install --no-cache-dir -r /tmp/server-requirements.txt
 
 RUN useradd --create-home --uid 10001 fashion \
     && mkdir -p /workspace/models /workspace/dataset \

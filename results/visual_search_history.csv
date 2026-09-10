@@ -1,3 +1,0 @@
-method,article_precision@5,colour_agreement@5,article_and_colour_precision@5,validation_queries,training_gallery
-hog_hsv_shape_0.75,0.7513865114686751,0.2538514207463198,0.1997261211913728,5842,27051
-garment_hog_colour,0.7263608353303663,0.4476891475522081,0.33070866141732286,5842,27051

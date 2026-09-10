@@ -1,16 +1,10 @@
-"""Load and run a classifier checkpoint produced by Tasks 1-3 notebooks."""
-
-from __future__ import annotations
-
+"""Load a selected Keras classifier and return calibrated predictions."""
 from pathlib import Path
-
 import numpy as np
-import torch
+import tensorflow as tf
 from PIL import Image, ImageEnhance
-
-from app.server.utils.image_preprocessor import image_tensor
-from app.server.utils.handcrafted import handcrafted_feature
-from app.server.utils.modeling import CompactCNN, SimpleCNN, FashionMLP, TunedCNN
+from app.server.utils.artifacts import load_checkpoint
+from app.server.utils.image_preprocessor import image_batch
 
 
 def temperature_scale(probabilities, temperature=1.0):
@@ -27,67 +21,34 @@ def temperature_scale(probabilities, temperature=1.0):
 
 
 class FashionClassifier:
-    def __init__(self, checkpoint_path: str | Path | dict, device: str | None = None):
-        self.device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
-        if isinstance(checkpoint_path, dict):
-            checkpoint = checkpoint_path
-        else:
-            path = Path(checkpoint_path)
-            if not path.exists():
-                raise FileNotFoundError(path)
-            checkpoint = torch.load(path, map_location=self.device, weights_only=False)
-        self.target = checkpoint["target"]
-        self.labels = checkpoint["labels"]
-        self.temperature = float(checkpoint.get('temperature', 1.0))
-        self.review_policy = checkpoint.get('review_policy')
-        self.model_type = checkpoint.get("model_type", "compact_cnn")
+    def __init__(self, checkpoint_path, device=None):
+        checkpoint = checkpoint_path if isinstance(checkpoint_path, dict) else load_checkpoint(checkpoint_path)
+        self.device = "/CPU:0" if device == "cpu" else (device if device and str(device).startswith("/") else None)
+        self.target, self.labels = checkpoint["target"], list(checkpoint["labels"])
+        self.temperature = float(checkpoint.get("temperature", 1.0))
+        self.review_policy = checkpoint.get("review_policy")
+        self.model_type = checkpoint["model_type"]
+        self.model = checkpoint.get("model")
         self.members = None
-        if self.model_type == 'probability_ensemble':
-            self.members = [FashionClassifier(member, device=str(self.device)) for member in checkpoint['members']]
-            if not self.members or any(member.labels != self.labels or member.target != self.target for member in self.members):
-                raise ValueError('Ensemble members must use the same target and label order')
-            self.model = None
-            self.estimator = None
-        elif self.model_type in {"compact_cnn", "simple_cnn", "tuned_cnn", "shallow_mlp", "deeper_mlp"}:
-            self.mean = checkpoint["mean"]
-            self.std = checkpoint["std"]
-            self.image_size = checkpoint.get("image_size", [96, 128])
-            if self.model_type in {"shallow_mlp", "deeper_mlp"}:
-                self.model = FashionMLP(len(self.labels), checkpoint.get("dropout", 0.2),
-                                       self.image_size, deep=self.model_type == "deeper_mlp")
-            else:
-                architecture = {"simple_cnn": SimpleCNN, "compact_cnn": CompactCNN,
-                                "tuned_cnn": TunedCNN}[self.model_type]
-                self.model = architecture(len(self.labels), checkpoint.get("dropout", 0.2))
-            self.model.load_state_dict(checkpoint["state_dict"])
-            self.model.to(self.device).eval()
-            self.estimator = None
-            self.feature_config = None
-        elif self.model_type == "hog_hsv_logistic_regression":
-            self.model = None
-            self.estimator = checkpoint["estimator"]
-            self.feature_config = checkpoint["feature_config"]
-            estimator_labels = list(self.estimator.classes_)
-            if set(estimator_labels) != set(self.labels):
-                raise ValueError("Checkpoint labels differ from estimator classes")
-            self.estimator_order = [estimator_labels.index(label) for label in self.labels]
+        if self.model is not None:
+            self.mean, self.std = checkpoint["mean"], checkpoint["std"]
+            self.image_size = checkpoint["image_size"]
+            self.estimator = self.feature_config = None
         else:
-            raise ValueError(f"Unsupported classifier model_type: {self.model_type!r}")
+            raise ValueError("Classifier has no trained Keras model")
 
-    @torch.inference_mode()
-    def predict_probabilities(self, image: Image.Image) -> np.ndarray:
-        """Return ordered probabilities, including any saved calibration."""
-        if self.members is not None:
-            probabilities = np.mean([member.predict_probabilities(image) for member in self.members], axis=0)
-        elif self.model is not None:
-            tensor = image_tensor(image, self.image_size, self.mean, self.std).to(self.device)
-            probabilities = self.model(tensor).softmax(dim=1)[0].cpu().numpy()
-        else:
-            features = handcrafted_feature(image, self.feature_config)[None, :]
-            probabilities = self.estimator.predict_proba(features)[0][self.estimator_order]
+    def predict_batch(self, inputs):
+        with tf.device(self.device):
+            probabilities = tf.nn.softmax(self.model(inputs, training=False), axis=-1).numpy()
         return temperature_scale(probabilities, self.temperature)
 
+    def predict_probabilities(self, image):
+        inputs = image_batch(image, self.image_size, self.mean, self.std)
+        return self.predict_batch(inputs)[0]
+
     def predict(self, image: Image.Image, top_k: int = 3) -> dict:
+        if top_k < 1:
+            raise ValueError("top_k must be positive")
         probabilities = self.predict_probabilities(image)
         count = min(top_k, len(self.labels))
         indices = np.argsort(probabilities)[::-1][:count]

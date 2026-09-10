@@ -23,10 +23,10 @@ DATA_ROOT = Path(
 
 TARGETS = ("articleType", "season", "gender", "usage")
 MODEL_FILES = {
-    "articleType": "article_type_model.pt",
-    "season": "season_model.pt",
-    "gender": "gender_model.pt",
-    "usage": "usage_model.pt",
+    "articleType": "article_type_model.keras",
+    "season": "season_model.keras",
+    "gender": "gender_model.keras",
+    "usage": "usage_model.keras",
 }
 MAX_BYTES = 10 * 1024 * 1024
 
@@ -53,7 +53,7 @@ def classifier_services() -> dict[str, FashionClassifier]:
 @lru_cache(maxsize=1)
 def search_service() -> FashionVisualSearch:
     return FashionVisualSearch(
-        MODEL_DIR / "visual_search_model.pt",
+        MODEL_DIR / "visual_search_model.json",
         MODEL_DIR / "visual_search_embeddings.npy",
         MODEL_DIR / "visual_search_metadata.csv",
     )
@@ -82,7 +82,7 @@ def health() -> dict[str, object]:
     available["visual_search"] = all(
         (MODEL_DIR / filename).exists()
         for filename in (
-            "visual_search_model.pt",
+            "visual_search_model.json",
             "visual_search_embeddings.npy",
             "visual_search_metadata.csv",
         )

@@ -1,4 +1,0 @@
-method,model_type,validation_accuracy,validation_macro_f1,validation_ece,complexity_parameters,epochs_run,eligible_for_selection,accuracy_change_vs_ordinary,macro_f1_change_vs_ordinary
-cnn_ordinary,simple_cnn,0.8879310344827587,0.40038047985861386,0.01640240784349116,160521,30,True,0.0,0.0
-cnn_scheduled,simple_cnn,0.8941379310344828,0.40704852954903,0.013232696272175867,160521,30,True,0.006206896551724128,0.006668049690416122
-cnn_four_blocks_scheduled,tuned_cnn,0.9065517241379311,0.4588396423342341,0.05743945479393001,654089,30,True,0.018620689655172384,0.05845916247562022

@@ -1,153 +1,51 @@
-"""Image models shared by training and inference."""
-
-from __future__ import annotations
-
-import torch
-import torch
-from torch import nn
+"""Keras model builders shared by training and prediction."""
+from tensorflow import keras
 
 
-class TrainingBatchNorm2d(nn.BatchNorm2d):
-    """Use native CUDA training kernels; retain ordinary checkpoint/inference semantics.
+@keras.utils.register_keras_serializable(package="Fashion")
+class ModelMetadata(keras.layers.Layer):
+    """Store label order, preprocessing and calibration inside the .keras file."""
+    def __init__(self, metadata=None, **kwargs):
+        super().__init__(**kwargs)
+        self.metadata = dict(metadata or {})
 
-    cuDNN's small-channel training kernels are unusually slow on the project's
-    RTX 3060. Native batch normalization computes the same operation and keeps
-    the same parameters and running statistics. Evaluation uses the default path.
-    """
+    def call(self, inputs):
+        return inputs
 
-    def forward(self, inputs):
-        if self.training and inputs.is_cuda:
-            with torch.backends.cudnn.flags(enabled=False):
-                return super().forward(inputs)
-        return super().forward(inputs)
-
-
-class FashionMLP(nn.Module):
-    """Fully connected ANN: one or three hidden layers on the same RGB input."""
-
-    def __init__(self, num_classes, dropout=0.2, image_size=(96, 128), deep=False):
-        super().__init__()
-        widths = (256, 128, 64) if deep else (256,)
-        layers = [nn.Flatten()]
-        inputs = 3 * image_size[0] * image_size[1]
-        for width in widths:
-            layers.extend([nn.Linear(inputs, width), nn.ReLU(), nn.Dropout(dropout)])
-            inputs = width
-        layers.append(nn.Linear(inputs, num_classes))
-        self.layers = nn.Sequential(*layers)
-
-    def forward(self, images):
-        return self.layers(images)
+    def get_config(self):
+        return {**super().get_config(), "metadata": dict(self.metadata)}
 
 
-class TunedCNN(nn.Module):
-    """Sample-inspired fourth convolution block and wider dense head."""
-
-    def __init__(self, num_classes, dropout=0.2):
-        super().__init__()
-        layers = []
-        inputs = 3
-        for channels in (32, 64, 128, 256):
-            layers.extend([nn.Conv2d(inputs, channels, 3, padding=1),
-                           TrainingBatchNorm2d(channels), nn.ReLU(), nn.MaxPool2d(2)])
-            inputs = channels
-        layers.extend([nn.AdaptiveAvgPool2d((2, 2)), nn.Flatten(),
-                       nn.Linear(256 * 2 * 2, 256), nn.ReLU(), nn.Dropout(dropout),
-                       nn.Linear(256, num_classes)])
-        self.layers = nn.Sequential(*layers)
-
-    def forward(self, images):
-        return self.layers(images)
+def FashionMLP(num_classes, dropout=0.2, image_size=(96, 128), deep=False):
+    layers = [keras.Input(shape=(image_size[1], image_size[0], 3)),
+              keras.layers.RandomFlip("horizontal"), keras.layers.Flatten()]
+    for width in ((256, 128, 64) if deep else (256,)):
+        layers.extend([keras.layers.Dense(width, activation="relu"), keras.layers.Dropout(dropout)])
+    layers.extend([keras.layers.Dense(num_classes), ModelMetadata(name="metadata")])
+    return keras.Sequential(layers, name="deeper_mlp" if deep else "shallow_mlp")
 
 
-class SimpleCNN(nn.Module):
-    """Three convolution blocks, followed by a small classification head."""
-
-    def __init__(self, num_classes: int, dropout: float = 0.2):
-        super().__init__()
-        self.layers = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=3, padding=1),
-            TrainingBatchNorm2d(32),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Conv2d(32, 64, kernel_size=3, padding=1),
-            TrainingBatchNorm2d(64),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Conv2d(64, 128, kernel_size=3, padding=1),
-            TrainingBatchNorm2d(128),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.AdaptiveAvgPool2d((2, 2)),
-            nn.Flatten(),
-            nn.Linear(128 * 2 * 2, 128),
-            nn.ReLU(),
-            nn.Dropout(dropout),
-            nn.Linear(128, num_classes),
-        )
-
-    def forward(self, images: torch.Tensor) -> torch.Tensor:
-        return self.layers(images)
+def _cnn(num_classes, channels, hidden, dropout, image_size):
+    layers = [keras.Input(shape=(image_size[1], image_size[0], 3)),
+              keras.layers.RandomFlip("horizontal")]
+    for width in channels:
+        layers.extend([keras.layers.Conv2D(width, 3, padding="same"),
+                       keras.layers.BatchNormalization(), keras.layers.Activation("relu"),
+                       keras.layers.MaxPooling2D(2)])
+    # Fixed input dimensions permit ordinary Keras pooling to a 2 x 2 grid.
+    height, width = image_size[1] // (2 ** len(channels)), image_size[0] // (2 ** len(channels))
+    if height % 2 or width % 2 or min(height, width) < 2:
+        raise ValueError("CNN input dimensions must support a 2 x 2 pooled grid")
+    layers.extend([keras.layers.AveragePooling2D((height // 2, width // 2)),
+                   keras.layers.Flatten(), keras.layers.Dense(hidden, activation="relu"),
+                   keras.layers.Dropout(dropout), keras.layers.Dense(num_classes),
+                   ModelMetadata(name="metadata")])
+    return keras.Sequential(layers, name="tuned_cnn" if len(channels) == 4 else "simple_cnn")
 
 
-class ResidualBlock(nn.Module):
-    def __init__(self, input_channels: int, output_channels: int, stride: int = 1):
-        super().__init__()
-        self.conv1 = nn.Conv2d(
-            input_channels, output_channels, 3, stride, 1, bias=False
-        )
-        self.bn1 = nn.BatchNorm2d(output_channels)
-        self.conv2 = nn.Conv2d(output_channels, output_channels, 3, 1, 1, bias=False)
-        self.bn2 = nn.BatchNorm2d(output_channels)
-        self.relu = nn.ReLU(inplace=True)
-        self.shortcut = (
-            nn.Identity()
-            if input_channels == output_channels and stride == 1
-            else nn.Sequential(
-                nn.Conv2d(input_channels, output_channels, 1, stride, bias=False),
-                nn.BatchNorm2d(output_channels),
-            )
-        )
-
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        residual = self.shortcut(inputs)
-        outputs = self.relu(self.bn1(self.conv1(inputs)))
-        outputs = self.bn2(self.conv2(outputs))
-        return self.relu(outputs + residual)
+def SimpleCNN(num_classes, dropout=0.2, image_size=(96, 128)):
+    return _cnn(num_classes, (32, 64, 128), 128, dropout, image_size)
 
 
-class CompactCNN(nn.Module):
-    def __init__(self, num_classes: int, dropout: float = 0.2):
-        super().__init__()
-        self.features = nn.Sequential(
-            ResidualBlock(3, 32),
-            nn.MaxPool2d(2),
-            ResidualBlock(32, 64),
-            nn.MaxPool2d(2),
-            ResidualBlock(64, 128),
-            nn.AdaptiveAvgPool2d(1),
-        )
-        self.classifier = nn.Sequential(
-            nn.Flatten(), nn.Dropout(dropout), nn.Linear(128, num_classes)
-        )
-
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        return self.classifier(self.features(inputs))
-
-
-class EmbeddingCNN(nn.Module):
-    def __init__(self, embedding_dim: int = 128):
-        super().__init__()
-        self.features = nn.Sequential(
-            ResidualBlock(3, 32),
-            nn.MaxPool2d(2),
-            ResidualBlock(32, 64),
-            nn.MaxPool2d(2),
-            ResidualBlock(64, 128),
-            nn.AdaptiveAvgPool2d(1),
-            nn.Flatten(),
-            nn.Linear(128, embedding_dim),
-        )
-
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        return nn.functional.normalize(self.features(inputs), dim=1)
+def TunedCNN(num_classes, dropout=0.2, image_size=(96, 128)):
+    return _cnn(num_classes, (32, 64, 128, 256), 256, dropout, image_size)

@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT))
 
 from app.server.utils.classifier import FashionClassifier
 
-MODEL_PATH = ROOT / "models" / "article_type_model.pt"
+MODEL_PATH = ROOT / "models" / "article_type_model.keras"
 
 
 def classify_article_type(image_path: str | Path, model_path: str | Path = MODEL_PATH) -> dict:

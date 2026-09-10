@@ -16,7 +16,7 @@ from app.server.utils.visual_search import FashionVisualSearch
 
 def search_image(image_path: str | Path, top_k: int = 5) -> list[dict]:
     search = FashionVisualSearch(
-        ROOT / "models" / "visual_search_model.pt",
+        ROOT / "models" / "visual_search_model.json",
         ROOT / "models" / "visual_search_embeddings.npy",
         ROOT / "models" / "visual_search_metadata.csv",
     )

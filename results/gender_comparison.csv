@@ -1,5 +1,0 @@
-method,model_type,validation_accuracy,validation_macro_f1,validation_ece,complexity_parameters,epochs_run,eligible_for_selection,family,selected
-shallow_mlp,shallow_mlp,0.8193103448275862,0.6537867653441266,0.03525043443359176,9438725,13,True,shallow_mlp,False
-deeper_mlp,deeper_mlp,0.8513793103448276,0.727794802333068,0.039813692240879425,9478917,16,True,deeper_mlp,False
-cnn_four_blocks_scheduled,tuned_cnn,0.8972413793103449,0.7742395626121787,0.034793773570965074,653061,24,True,cnn,True
-hog_hsv_logistic_regression,hog_hsv_logistic_regression,0.7879310344827586,0.6198047835020619,0.08667355859074098,6425,0,True,hog_hsv,False
