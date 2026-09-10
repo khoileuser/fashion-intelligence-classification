@@ -10,7 +10,7 @@ from PIL import Image, ImageEnhance
 
 from app.server.utils.image_preprocessor import image_tensor
 from app.server.utils.handcrafted import handcrafted_feature
-from app.server.utils.modeling import CompactCNN, SimpleCNN
+from app.server.utils.modeling import CompactCNN, SimpleCNN, FashionMLP, TunedCNN
 
 
 def temperature_scale(probabilities, temperature=1.0):
@@ -48,12 +48,17 @@ class FashionClassifier:
                 raise ValueError('Ensemble members must use the same target and label order')
             self.model = None
             self.estimator = None
-        elif self.model_type in {"compact_cnn", "simple_cnn"}:
+        elif self.model_type in {"compact_cnn", "simple_cnn", "tuned_cnn", "shallow_mlp", "deeper_mlp"}:
             self.mean = checkpoint["mean"]
             self.std = checkpoint["std"]
             self.image_size = checkpoint.get("image_size", [96, 128])
-            architecture = SimpleCNN if self.model_type == "simple_cnn" else CompactCNN
-            self.model = architecture(len(self.labels), checkpoint.get("dropout", 0.2))
+            if self.model_type in {"shallow_mlp", "deeper_mlp"}:
+                self.model = FashionMLP(len(self.labels), checkpoint.get("dropout", 0.2),
+                                       self.image_size, deep=self.model_type == "deeper_mlp")
+            else:
+                architecture = {"simple_cnn": SimpleCNN, "compact_cnn": CompactCNN,
+                                "tuned_cnn": TunedCNN}[self.model_type]
+                self.model = architecture(len(self.labels), checkpoint.get("dropout", 0.2))
             self.model.load_state_dict(checkpoint["state_dict"])
             self.model.to(self.device).eval()
             self.estimator = None

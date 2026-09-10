@@ -1,0 +1,21 @@
+{
+  "target": "usage",
+  "selected": "cnn_four_blocks_scheduled",
+  "cnn_selected": "cnn_four_blocks_scheduled",
+  "highest_validation_accuracy": "cnn_four_blocks_scheduled",
+  "test_metrics": {
+    "accuracy": 0.8985659321441063,
+    "macro_f1": 0.41206955897620473,
+    "ece": 0.016928886199017945,
+    "nll": 0.3177474597494886,
+    "brier": 0.16070548804296605
+  },
+  "run_signature": "6c124efd4b90d02b3902339e3f2cc645f4318a52496e5c100cef104387ed6fb9",
+  "split_sizes": {
+    "train": 27050,
+    "selection": 2900,
+    "calibration": 1378,
+    "policy": 1564
+  },
+  "test_scope": "internal_test_with_prior_development_exposure"
+}

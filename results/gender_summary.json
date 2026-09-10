@@ -1,0 +1,21 @@
+{
+  "target": "gender",
+  "selected": "cnn_four_blocks_scheduled",
+  "cnn_selected": "cnn_four_blocks_scheduled",
+  "highest_validation_accuracy": "cnn_four_blocks_scheduled",
+  "test_metrics": {
+    "accuracy": 0.8828261629940539,
+    "macro_f1": 0.7132504068793868,
+    "ece": 0.014790984470390444,
+    "nll": 0.31424143499295354,
+    "brier": 0.16800242884277183
+  },
+  "run_signature": "3b900ab1b3019e6f13c7f8219dc9b9a00695f25d3050fc67f4554610f16d521d",
+  "split_sizes": {
+    "train": 27051,
+    "selection": 2900,
+    "calibration": 1378,
+    "policy": 1564
+  },
+  "test_scope": "internal_test_with_prior_development_exposure"
+}

@@ -1,2 +1,0 @@
-method,validation_accuracy,validation_macro_f1,validation_ece,validation_nll,validation_brier
-brightness_training,0.8134482758620689,0.6226055236381982,0.013448487934742162,0.6315580493852105,0.2706031047436735

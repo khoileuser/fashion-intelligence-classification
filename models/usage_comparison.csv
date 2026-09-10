@@ -1,4 +1,0 @@
-method,model_type,validation_accuracy,validation_macro_f1,validation_ece,complexity_parameters,epochs_run,eligible_for_selection
-majority,reference_only,0.7721670660732626,0.10892977880807496,0.22783293392673742,1,0,False
-hog_hsv_logistic_regression,hog_hsv_logistic_regression,0.7690859294762068,0.41849965288455343,0.10371132717888393,11565,0,True
-cnn_ordinary,simple_cnn,0.875385142074632,0.38872214957343115,0.04033924568315681,160521,17,True

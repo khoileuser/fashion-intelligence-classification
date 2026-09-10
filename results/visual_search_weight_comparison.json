@@ -1,0 +1,23 @@
+{
+  "0.7": {
+    "article_precision@5": 0.7035946593632317,
+    "colour_agreement@5": 0.48709346114344404,
+    "article_and_colour_precision@5": 0.35097569325573436,
+    "validation_queries": 5842,
+    "training_gallery": 27051
+  },
+  "0.8": {
+    "article_precision@5": 0.7263608353303663,
+    "colour_agreement@5": 0.4476891475522081,
+    "article_and_colour_precision@5": 0.33070866141732286,
+    "validation_queries": 5842,
+    "training_gallery": 27051
+  },
+  "0.9": {
+    "article_precision@5": 0.7484765491270113,
+    "colour_agreement@5": 0.37072920232796985,
+    "article_and_colour_precision@5": 0.28421773365285863,
+    "validation_queries": 5842,
+    "training_gallery": 27051
+  }
+}
