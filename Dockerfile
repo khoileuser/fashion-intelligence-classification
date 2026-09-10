@@ -7,12 +7,14 @@ RUN apt-get update \
 WORKDIR /assets
 COPY models/article_type_model.pt models/season_model.pt models/gender_model.pt models/usage_model.pt models/visual_search_model.pt models/visual_search_embeddings.npy models/visual_search_metadata.csv ./models/
 # Portainer checkouts may contain LFS pointers. Smudge downloads the exact
-# referenced object; already downloaded files pass through unchanged.
-RUN git init \
+# referenced object anonymously from the public repository.
+RUN git init -q \
     && git remote add origin https://github.com/khoileuser/fashion-intelligence-classification.git \
     && for file in models/*; do \
-         git lfs smudge "$file" < "$file" > /tmp/model-asset \
-         && mv /tmp/model-asset "$file" || exit 1; \
+         if git lfs pointer --check --file="$file"; then \
+           GIT_TERMINAL_PROMPT=0 git lfs smudge "$file" < "$file" > /tmp/model-asset \
+           && mv /tmp/model-asset "$file" || exit 1; \
+         fi; \
        done
 
 FROM python:3.12-slim AS server
