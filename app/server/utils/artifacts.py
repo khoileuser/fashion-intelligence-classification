@@ -21,7 +21,7 @@ def save_checkpoint(checkpoint, path):
     metadata = json.loads(json.dumps(metadata, default=lambda value: value.item()))
     model.get_layer("metadata").metadata = metadata
     # Prediction artifacts do not need Adam optimizer slots.
-    inference_model = keras.models.clone_model(model)
+    inference_model = type(model).from_config(model.get_config())
     inference_model.set_weights(model.get_weights())
     inference_model.save(path)
     return path

@@ -1,7 +1,7 @@
 {
   "model_type": "keras_embedding_cosine",
   "encoder_file": "article_type_model.keras",
-  "encoder_sha256": "1d89a107b3e58d9da863c9daa26b15b3d8cdb86d0dd22827c197889c6261a7ed",
+  "encoder_sha256": "6d52d5a4fd7a3467b379ba862caa45a74d876512fa9c56410f6325e3e36fd37b",
   "encoder_model_type": "cnn_continue_weighted",
   "embedding_dim": 256,
   "recipe": "last_hidden_layer_l2_cosine",
