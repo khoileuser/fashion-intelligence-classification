@@ -157,3 +157,21 @@ as described above. Do not continue past an installation error.
 Submission generation is implemented directly in Task 4 Section 9. There is no
 separate `create_submission.py` command. Run Tasks 1-3 first so all four selected
 classifiers exist, then run Task 4 through its final export cell.
+
+## VS Code with a Colab kernel
+
+Upload `scripts/` (including `scripts/data/`) to
+`MyDrive/fashion-intelligence-classification/` and the single supplied
+`A2_FashionDataset.zip` to `MyDrive/`. You do not need to upload the extracted
+image folders. Each notebook's first setup cell exposes `COLAB_PROJECT` and
+`DATASET_ZIP` so you can adjust these paths.
+
+Select a Colab GPU kernel, restart it if needed, press Run All and authorize
+Drive. Setup extracts the ZIP into `/content/fashion_data/`, locates the folder
+containing `train/` and `test/`, and sets `FASHION_DATA_ROOT` automatically.
+A completion marker avoids repeated extraction within the same runtime.
+Interrupted extraction is retried; a changed archive uses a new directory.
+
+Models, results and figures are saved in the Drive project folder. The local
+extracted dataset disappears when Colab resets; the next run extracts it again.
+Local Windows/WSL execution skips the Colab setup entirely.

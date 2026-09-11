@@ -1,0 +1,21 @@
+{
+  "target": "gender",
+  "selected": "cnn_four_blocks_scheduled",
+  "cnn_selected": "cnn_four_blocks_scheduled",
+  "framework": "tensorflow_keras",
+  "model_file": "gender_model.keras",
+  "test_metrics": {
+    "accuracy": 0.8891220706540749,
+    "macro_f1": 0.7398206402920422,
+    "ece": 0.021677331423667737,
+    "nll": 0.3073466326720838,
+    "brier": 0.16325914026673252
+  },
+  "split_sizes": {
+    "train": 27051,
+    "selection": 2900,
+    "calibration": 1378,
+    "policy": 1564
+  },
+  "test_scope": "internal_test_with_prior_development_exposure"
+}

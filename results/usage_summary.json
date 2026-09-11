@@ -1,0 +1,21 @@
+{
+  "target": "usage",
+  "selected": "cnn_four_blocks_scheduled",
+  "cnn_selected": "cnn_four_blocks_scheduled",
+  "framework": "tensorflow_keras",
+  "model_file": "usage_model.keras",
+  "test_metrics": {
+    "accuracy": 0.9013641133263379,
+    "macro_f1": 0.4184529953411197,
+    "ece": 0.015907245368778584,
+    "nll": 0.2960043341056004,
+    "brier": 0.15389866429702823
+  },
+  "split_sizes": {
+    "train": 27050,
+    "selection": 2900,
+    "calibration": 1378,
+    "policy": 1564
+  },
+  "test_scope": "internal_test_with_prior_development_exposure"
+}
