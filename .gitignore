@@ -281,3 +281,8 @@ prediction/*.csv
 # Separate TensorFlow environments
 .venv-keras/
 .venv-wsl/
+
+# Isolated notebook experiments (sources remain tracked)
+/models-test/
+/results-test/
+/figures-test/
