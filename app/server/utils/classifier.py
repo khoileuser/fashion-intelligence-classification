@@ -12,6 +12,13 @@ def temperature_scale(probabilities, temperature=1.0):
     if not np.isfinite(temperature) or temperature <= 0:
         raise ValueError('Temperature must be finite and positive')
     values = np.asarray(probabilities, dtype=np.float64)
+    if values.ndim < 1 or values.shape[-1] == 0 or not np.isfinite(values).all() or (values < 0).any():
+        raise ValueError('Probabilities must be finite, nonnegative vectors')
+    mass = values.sum(axis=-1, keepdims=True)
+    if (mass <= 0).any():
+        raise ValueError('Probability vectors must have positive mass')
+    # Softmax is computed in float32; renormalize after conversion to float64.
+    values = values / mass
     if temperature == 1.0:
         return values
     logits = np.log(np.clip(values, np.finfo(np.float64).tiny, 1.0)) / temperature

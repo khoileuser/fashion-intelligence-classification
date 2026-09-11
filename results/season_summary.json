@@ -1,15 +1,15 @@
 {
   "target": "season",
-  "selected": "cnn_four_blocks_scheduled",
-  "cnn_selected": "cnn_four_blocks_scheduled",
+  "selected": "cnn_continue",
+  "cnn_selected": "cnn_continue",
   "framework": "tensorflow_keras",
   "model_file": "season_model.keras",
   "test_metrics": {
-    "accuracy": 0.731583552055993,
-    "macro_f1": 0.7149895658943779,
-    "ece": 0.04866231585007849,
-    "nll": 0.6578218901911298,
-    "brier": 0.3617880020482861
+    "accuracy": 0.7394575678040245,
+    "macro_f1": 0.7235192476315109,
+    "ece": 0.03327251439435442,
+    "nll": 0.643482129457791,
+    "brier": 0.3547671225479548
   },
   "split_sizes": {
     "train": 27038,

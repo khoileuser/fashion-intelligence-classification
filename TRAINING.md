@@ -175,3 +175,25 @@ Interrupted extraction is retried; a changed archive uses a new directory.
 Models, results and figures are saved in the Drive project folder. The local
 extracted dataset disappears when Colab resets; the next run extracts it again.
 Local Windows/WSL execution skips the Colab setup entirely.
+
+
+## Parameter tuning after the first completed run
+
+Tasks 1–3 include the additional parameter experiments in Section 5.3.6.
+They test a lower learning rate for each MLP and compare unweighted versus
+class-weighted continuation of the selected four-block CNN. MLP trials use at
+most 20 epochs; CNN trials use at most 8 additional epochs. Early stopping
+monitors selection macro-F1 with patience 4. The selected model is still chosen
+from three families, and only one classifier per target is exported to models/.
+
+With a live kernel retaining the original models and histories, run the new
+Section 5.3.6 cells, then Sections 5.4 onward. Do not rerun the original fitting
+cells merely to tune. A fresh Run All retrains all candidates intentionally.
+Keep RESUME_SAVED_RESULTS=False for fresh runs, so saved rows cannot silently
+enter a new comparison. Intentional resumption after kernel shutdown requires
+the matching saved CNN, history CSVs, metadata, label order and frozen splits.
+
+After changing the article-type model, rerun Task 4 to rebuild the retrieval
+gallery with the current encoder and regenerate assignment predictions. The
+classification analysis documents an exposed internal test; tune using the
+selection partition, not the internal-test scores.

@@ -1,0 +1,114 @@
+{
+  "article_type": {
+    "model_sha256": "1d89a107b3e58d9da863c9daa26b15b3d8cdb86d0dd22827c197889c6261a7ed",
+    "method": "cnn_continue_weighted",
+    "labels": 124,
+    "prediction": {
+      "target": "articleType",
+      "label": "Tshirts",
+      "confidence": 0.9986344738614333,
+      "top_k": [
+        {
+          "label": "Tshirts",
+          "confidence": 0.9986344738614333
+        },
+        {
+          "label": "Shirts",
+          "confidence": 0.0010404842458771294
+        },
+        {
+          "label": "Jackets",
+          "confidence": 0.00022136233499461553
+        }
+      ],
+      "needs_review": false,
+      "review_threshold": 0.5,
+      "confidence_calibrated": true
+    },
+    "passed": true
+  },
+  "season": {
+    "model_sha256": "dc5aacf8cd933feae1ae49ab13966b8e60af95a4d6708a6be2831e02d3790d10",
+    "method": "cnn_continue",
+    "labels": 4,
+    "prediction": {
+      "target": "season",
+      "label": "Summer",
+      "confidence": 0.8772788867498836,
+      "top_k": [
+        {
+          "label": "Summer",
+          "confidence": 0.8772788867498836
+        },
+        {
+          "label": "Fall",
+          "confidence": 0.11659487634132126
+        },
+        {
+          "label": "Winter",
+          "confidence": 0.005372272941345323
+        }
+      ],
+      "needs_review": false,
+      "review_threshold": 0.75,
+      "confidence_calibrated": false
+    },
+    "passed": true
+  },
+  "gender": {
+    "model_sha256": "6dffe9830749195cd5d71cea4149f63b35596e130624336d5bebc0113eb5c116",
+    "method": "cnn_four_blocks_scheduled",
+    "labels": 5,
+    "prediction": {
+      "target": "gender",
+      "label": "Men",
+      "confidence": 0.9872380618012943,
+      "top_k": [
+        {
+          "label": "Men",
+          "confidence": 0.9872380618012943
+        },
+        {
+          "label": "Unisex",
+          "confidence": 0.012182371842577365
+        },
+        {
+          "label": "Boys",
+          "confidence": 0.0005377144037652665
+        }
+      ],
+      "needs_review": false,
+      "review_threshold": 0.5,
+      "confidence_calibrated": false
+    },
+    "passed": true
+  },
+  "usage": {
+    "model_sha256": "b5835037ba3eba381f7d3e0fba22eaabd04e30d1cc2358a594e0896ea7b066f0",
+    "method": "shallow_mlp_lower_lr",
+    "labels": 9,
+    "prediction": {
+      "target": "usage",
+      "label": "Sports",
+      "confidence": 0.6219575719770511,
+      "top_k": [
+        {
+          "label": "Sports",
+          "confidence": 0.6219575719770511
+        },
+        {
+          "label": "Casual",
+          "confidence": 0.37769980509887685
+        },
+        {
+          "label": "NA",
+          "confidence": 0.00010549526882826463
+        }
+      ],
+      "needs_review": false,
+      "review_threshold": 0.56,
+      "confidence_calibrated": false
+    },
+    "passed": true
+  }
+}

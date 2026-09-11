@@ -1,15 +1,15 @@
 {
   "target": "articleType",
-  "selected": "cnn_four_blocks_scheduled",
-  "cnn_selected": "cnn_four_blocks_scheduled",
+  "selected": "cnn_continue_weighted",
+  "cnn_selected": "cnn_continue_weighted",
   "framework": "tensorflow_keras",
   "model_file": "article_type_model.keras",
   "test_metrics": {
-    "accuracy": 0.860615599860091,
-    "macro_f1": 0.620628625246979,
-    "ece": 0.012108443285068167,
-    "nll": 0.45351295423765897,
-    "brier": 0.19910961493573512
+    "accuracy": 0.8634137810423225,
+    "macro_f1": 0.6372718264630908,
+    "ece": 0.011648409314748621,
+    "nll": 0.44977140731015386,
+    "brier": 0.19689916961043366
   },
   "split_sizes": {
     "train": 27051,

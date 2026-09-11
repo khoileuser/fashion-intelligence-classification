@@ -1,0 +1,5 @@
+,family,learning_rate,epochs,weighted
+shallow_mlp_lower_lr,shallow_mlp,0.0001,20,False
+deeper_mlp_lower_lr,deeper_mlp,0.0003,20,False
+cnn_continue,cnn,1e-05,8,False
+cnn_continue_weighted,cnn,1e-05,8,True
