@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import os
@@ -23,6 +24,25 @@ def fingerprint(notebook):
         [(cell.cell_type, cell.source) for cell in notebook.cells],
         ensure_ascii=False,
     ).encode()).hexdigest()
+
+
+def exported_models(path):
+    """Read explicit export paths; avoid unreliable WSL/DrvFS directory scans."""
+    manifest = ROOT / "results-test" / (path.stem + "_model_manifest.csv")
+    with manifest.open(encoding="utf-8", newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    if not rows:
+        raise RuntimeError(f"Empty model manifest: {manifest}")
+    names = {row["file"] for row in rows}
+    for target in {row["target"] for row in rows}:
+        stem = "article_type" if target == "articleType" else target
+        names.add(f"{stem}_model.keras")
+    for name in names:
+        if Path(name).name != name or not name.endswith(".keras"):
+            raise RuntimeError(f"Invalid model filename in {manifest}: {name}")
+        if not (ROOT / "models-test" / name).is_file():
+            raise FileNotFoundError(ROOT / "models-test" / name)
+    return sorted(names)
 
 
 def execute_notebook(path, kernel_manager, log_path):
@@ -129,20 +149,19 @@ def main():
                 (ROOT / "models-test" / name).is_file() for name in previous.get("models", [])
             )
             if not args.rerun and previous.get("status") == "complete" and previous.get("source_sha256") == digest and artifacts_present:
-                print(f"Skipping completed {path.name}; use --rerun to replace its experiments.", flush=True)
+                print(f"Skipping completed {path.name}; use --rerun to refresh evaluation while reusing saved candidates.", flush=True)
                 continue
             state[path.name] = {"status": "running", "source_sha256": digest, "started": time.time()}
             state_path.write_text(json.dumps(state, indent=2), encoding="utf-8")
             kernel = KernelManager(kernel_name="fashion-experiment", kernel_spec_manager=manager)
             try:
                 execute_notebook(path, kernel, logs / (path.stem + ".log"))
+                exported = exported_models(path)
             except BaseException:
                 state[path.name]["status"] = "failed"
                 state_path.write_text(json.dumps(state, indent=2), encoding="utf-8")
                 print(f"Stopped at {path.name}. Completed cells and candidate models were saved. Fix the error and run again.", file=sys.stderr)
                 raise
-            stems = {NOTEBOOKS[0]: ["article_type"], NOTEBOOKS[1]: ["season"], NOTEBOOKS[2]: ["gender", "usage"]}[path.name]
-            exported = sorted(p.name for stem in stems for p in (ROOT / "models-test").glob(stem + "_*.keras"))
             state[path.name].update(status="complete", finished=time.time(), models=exported)
             state_path.write_text(json.dumps(state, indent=2), encoding="utf-8")
     print("All requested experiments completed. Review results-test and models-test; production files were not replaced.")
