@@ -1,0 +1,32 @@
+{
+  "article_type_cnn_continue_weighted": {
+    "model_sha256": "df7871f812580230cd7d000676a84874accac4153535114ce9e16c2dc7af5f6b",
+    "selection_accuracy": 0.8696551724137931,
+    "selection_macro_f1": 0.6964320883810664,
+    "tensorflow": "2.21.0"
+  },
+  "article_type_shallow_mlp_lower_lr": {
+    "model_sha256": "120f38896318e194076ba05c31cebd1144480e64ec0fc93c243445b139efae17",
+    "selection_accuracy": 0.7420689655172413,
+    "selection_macro_f1": 0.44320152900303555,
+    "tensorflow": "2.21.0"
+  },
+  "article_type_deeper_mlp_two_layers": {
+    "model_sha256": "00cff1f6573a3afab00d234cd7509f4b2d01ba590ad629d55b41c37706804768",
+    "selection_accuracy": 0.7324137931034482,
+    "selection_macro_f1": 0.3783012712188087,
+    "tensorflow": "2.21.0"
+  },
+  "gender_cnn_four_blocks_scheduled": {
+    "model_sha256": "0ee5a489a6c6c92fdeebae7fea4d7ee66a812f3136a3f486456eec60db260a62",
+    "selection_accuracy": 0.8993103448275862,
+    "selection_macro_f1": 0.7901228224704215,
+    "tensorflow": "2.21.0"
+  },
+  "gender_shallow_mlp_lower_lr": {
+    "model_sha256": "cdb0d1579a4aa977fda2e468160ae63fa8ac0e1d92894fa6476664f01258fae1",
+    "selection_accuracy": 0.8468965517241379,
+    "selection_macro_f1": 0.7117527943783131,
+    "tensorflow": "2.21.0"
+  }
+}

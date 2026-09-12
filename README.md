@@ -15,7 +15,6 @@ notebooks/        Tasks 0-4: analysis, training and exports
 notebooks-test/   Full classification experiments and their runner
 models/           Only selected prediction models and the search gallery
 results/          Current measured tables and reports
-figures/          Current plots
 prediction/       Assignment prediction CSV
 ```
 
