@@ -1,6 +1,6 @@
 """Catalogue metadata, explicitly limited to public product attributes."""
 import csv
-from scripts.preprocessing import _read_csv
+from app.server.utils.metadata_csv import read_metadata_csv
 from pathlib import Path
 
 FIELDS = ('id', 'articleType', 'baseColour', 'gender', 'usage', 'subCategory', 'season', 'productDisplayName')
@@ -24,7 +24,7 @@ class Catalogue:
         details = {}
         for source_path in (data_root / 'train/styles_train.csv', data_root / 'styles.csv'):
             if source_path.is_file():
-                details = {row['id']: row for row in _read_csv(source_path).to_dict('records')}
+                details = {row['id']: row for row in read_metadata_csv(source_path).to_dict('records')}
                 break
         self.items = []
         for row in indexed:

@@ -38,6 +38,7 @@ RUN useradd --create-home --uid 10001 fashion \
     && chown -R fashion:fashion /workspace
 
 COPY --chown=fashion:fashion app/server app/server
+COPY --chown=fashion:fashion scripts/data/image_audit.csv scripts/data/image_audit.csv
 COPY --from=model-assets --chown=fashion:fashion /assets/models /workspace/models
 
 USER fashion
