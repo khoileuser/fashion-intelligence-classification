@@ -44,9 +44,6 @@ export function ModelInsights() {
                         </DropdownOption>
                     ))}
                 </DropdownSelect>
-                <Badge variant="outline">
-                    Selected: {task.selected.replaceAll("_", " ")}
-                </Badge>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
                 {[
@@ -120,11 +117,9 @@ export function ModelInsights() {
                                     </TableCell>
                                     <TableCell>{r.epochs_run}</TableCell>
                                     <TableCell>
-                                        {r.selected === "True" ? (
-                                            <Badge>Selected</Badge>
-                                        ) : (
-                                            "Not selected"
-                                        )}
+                                        {r.selected === "True"
+                                            ? "Selected"
+                                            : "Not selected"}
                                     </TableCell>
                                 </TableRow>
                             ))}

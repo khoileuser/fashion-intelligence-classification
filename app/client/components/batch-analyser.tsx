@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { Download, Upload, Play, Square, RotateCcw, Trash2 } from "lucide-react"
 import data from "@/lib/insights-data.json"
 import { batchCsv, targets, type BatchRow } from "@/lib/batch"
+import { createClientId } from "@/lib/client-id"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -78,7 +79,7 @@ export function BatchAnalyser() {
             const preview = URL.createObjectURL(file)
             urls.current.add(preview)
             valid.push({
-                id: crypto.randomUUID(),
+                id: createClientId(),
                 file,
                 preview,
                 status: "queued",

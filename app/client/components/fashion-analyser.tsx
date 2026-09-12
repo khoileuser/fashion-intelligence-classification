@@ -32,6 +32,7 @@ import {
 import { PredictionHeatmap } from "@/components/prediction-heatmap"
 import { Progress } from "@/components/ui/progress"
 import { addHistoryEntry, createThumbnail } from "@/lib/history"
+import { createClientId } from "@/lib/client-id"
 import { cn } from "@/lib/utils"
 import type { AnalysisResponse, Prediction, SimilarItem } from "@/lib/types"
 
@@ -224,7 +225,7 @@ export function FashionAnalyser({ initialSample }: { initialSample?: string }) {
             try {
                 const thumbnail = await createThumbnail(file)
                 addHistoryEntry({
-                    id: crypto.randomUUID(),
+                    id: createClientId(),
                     createdAt: new Date().toISOString(),
                     fileName: file.name,
                     thumbnail,
