@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { Search, ArrowRight, Loader2, X } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -25,6 +25,7 @@ type CatalogueResponse = {
     pages: number
     facets: Record<string, string[]>
     reference: CatalogueItem | null
+    seed: number | null
 }
 const filters = [
     ["articleType", "Article type"],
@@ -34,6 +35,7 @@ const filters = [
     ["baseColour", "Colour"],
 ]
 export function CatalogueExplorer() {
+    const seed = useRef<number | null>(null)
     const [query, setQuery] = useState(""),
         [search, setSearch] = useState(""),
         [selected, setSelected] = useState<Record<string, string>>({}),
@@ -51,6 +53,8 @@ export function CatalogueExplorer() {
             ...selected,
         })
         if (similar) params.set("similar_to", similar)
+        if (seed.current !== null)
+            params.set("random_seed", String(seed.current))
         fetch(`/api/catalogue?${params}`, { signal: abort.signal })
             .then(async (r) => {
                 const body = await r.json()
@@ -58,7 +62,10 @@ export function CatalogueExplorer() {
                     throw new Error(
                         body.detail || "Could not load the catalogue.",
                     )
-                if (!abort.signal.aborted) setData(body)
+                if (!abort.signal.aborted) {
+                    seed.current = body.seed
+                    setData(body)
+                }
             })
             .catch((e) => {
                 if (!abort.signal.aborted) setError(e.message)
@@ -191,7 +198,7 @@ export function CatalogueExplorer() {
                         {data?.total.toLocaleString()} products /{" "}
                         {similar
                             ? "Sorted by visual similarity"
-                            : "Catalogue order"}
+                            : "Random order"}
                     </p>
                     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {data?.items.map((item) => (

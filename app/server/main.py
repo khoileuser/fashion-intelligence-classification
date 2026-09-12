@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import io
 import os
+import random
 import re
+import secrets
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -187,6 +189,7 @@ def catalogue(
     baseColour: str = Query('', max_length=100),
     page: int = Query(1, ge=1), page_size: int = Query(12, ge=1, le=48),
     similar_to: str | None = Query(None, pattern=r'^\d+$', max_length=20),
+    random_seed: int | None = Query(None, ge=0, le=2**32 - 1),
 ):
     service = available_catalogue()
     items = service.filter(q, articleType=articleType, season=season, usage=usage, gender=gender, baseColour=baseColour)
@@ -202,11 +205,15 @@ def catalogue(
         except ValueError as error:
             raise HTTPException(status_code=503, detail=str(error)) from error
         items = [{**service.by_id[item_id], 'score': score} for item_id, score in ranked]
+    else:
+        random_seed = random_seed if random_seed is not None else secrets.randbits(32)
+        random.Random(random_seed).shuffle(items)
     total = len(items)
     pages = max(1, (total + page_size - 1) // page_size)
     page = min(page, pages)
     return {'items': items[(page - 1) * page_size:page * page_size], 'total': total,
-            'page': page, 'pages': pages, 'facets': service.facets, 'reference': reference}
+            'page': page, 'pages': pages, 'facets': service.facets, 'reference': reference,
+            'seed': random_seed}
 
 
 @app.post('/explain')
