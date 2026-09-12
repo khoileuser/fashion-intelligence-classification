@@ -107,14 +107,11 @@ export function BatchAnalyser() {
                 const form = new FormData()
                 form.append("file", row.file)
                 try {
-                    const response = await fetch(
-                        "/api/predict?top_k=3",
-                        {
-                            method: "POST",
-                            body: form,
-                            signal: abort.signal,
-                        },
-                    )
+                    const response = await fetch("/api/predict?top_k=3", {
+                        method: "POST",
+                        body: form,
+                        signal: abort.signal,
+                    })
                     const body = await response.json()
                     if (!response.ok)
                         throw new Error(
@@ -441,7 +438,6 @@ export function BatchAnalyser() {
                                                                 )}
                                                         </DropdownSelect>
                                                         <p className="max-w-48 whitespace-normal text-xs text-muted-foreground">
-                                                            Predicted:{" "}
                                                             {prediction.label} /{" "}
                                                             {(
                                                                 prediction.confidence *
@@ -505,13 +501,6 @@ export function BatchAnalyser() {
                     </Table>
                 </CardContent>
             </Card>
-            <p className="text-xs leading-6 text-muted-foreground">
-                Review and edit attributes before exporting. All analysed items
-                are exported, including any corrections. Exports keep the
-                original prediction, confidence, review flag, correction, and
-                final label in separate columns; corrections do not retrain the
-                model.
-            </p>
         </section>
     )
 }

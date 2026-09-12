@@ -304,19 +304,8 @@ export function FashionAnalyser({ initialSample }: { initialSample?: string }) {
     }
 
     return (
-        <section id="analyser" className="scroll-mt-20 px-4 pb-20 md:px-6">
+        <section id="analyser" className="scroll-mt-20 px-4 md:px-6">
             <div className="mx-auto">
-                <div className="mb-6 flex items-end justify-between gap-4">
-                    <div>
-                        <h2 className="text-2xl font-bold tracking-tight">
-                            Analyse a garment
-                        </h2>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Choose a clear product photo to get started.
-                        </p>
-                    </div>
-                </div>
-
                 <div className="grid gap-6 md:grid-cols-2">
                     <Card>
                         <CardHeader>

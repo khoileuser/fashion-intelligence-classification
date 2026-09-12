@@ -8,7 +8,6 @@ import {
     CardContent,
     CardDescription,
 } from "@/components/ui/card"
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import { DropdownSelect, DropdownOption } from "@/components/dropdown-select"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -30,16 +29,6 @@ export function ModelInsights() {
     )
     return (
         <div className="space-y-6">
-            <Alert>
-                <AlertTitle>
-                    Internal evaluation, with prior development exposure
-                </AlertTitle>
-                <AlertDescription>
-                    These saved test results are not an untouched external
-                    benchmark. Validation scores below were used for model
-                    selection. Performance on new real-world photos may differ.
-                </AlertDescription>
-            </Alert>
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <DropdownSelect
                     aria-label="Classification task"

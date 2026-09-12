@@ -5,7 +5,6 @@ import {
     Layers,
     ScanLine,
     ChartNoAxesCombined,
-    CheckCheck,
     Shirt,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -34,7 +33,7 @@ export default function Home() {
                             href="/analyse"
                             className={buttonVariants({ size: "lg" })}
                         >
-                            Start analysing <ArrowRight />
+                            Analyse <ArrowRight />
                         </Link>
                         <Link
                             href="/insights"
@@ -43,12 +42,9 @@ export default function Home() {
                                 size: "lg",
                             })}
                         >
-                            Explore model insights
+                            Model insights
                         </Link>
                     </div>
-                    <p className="mt-6 text-xs text-muted-foreground">
-                        Four classification tasks / Visual search / CSV export
-                    </p>
                 </div>
                 <div className="relative rounded-3xl border bg-muted/60 p-6 md:p-10">
                     <div className="mb-5 flex justify-between text-xs text-muted-foreground">
@@ -84,13 +80,6 @@ export default function Home() {
                             ))}
                         </div>
                     </div>
-                    <div className="mt-4 flex items-center gap-3 rounded-xl border bg-card p-4 text-sm">
-                        <CheckCheck className="size-5" />
-                        <span>Analyse. Review. Export.</span>
-                        <Badge variant="secondary" className="ml-auto">
-                            Your workflow
-                        </Badge>
-                    </div>
                 </div>
             </section>
             <section className="border-y bg-muted/30">
@@ -99,10 +88,6 @@ export default function Home() {
                         <h2 className="text-3xl font-semibold tracking-tight">
                             A photo is just the beginning.
                         </h2>
-                        <p className="max-w-md text-sm leading-6 text-muted-foreground">
-                            A practical workspace backed by measurable machine
-                            learning experiments.
-                        </p>
                     </div>
                     <div className="grid gap-5 md:grid-cols-3">
                         {[
@@ -133,40 +118,6 @@ export default function Home() {
                             </Card>
                         ))}
                     </div>
-                </div>
-            </section>
-            <section className="mx-auto max-w-7xl px-4 py-16 md:px-6">
-                <h2 className="text-3xl font-semibold tracking-tight">
-                    From upload to a reviewed catalogue.
-                </h2>
-                <div className="mt-8 grid gap-8 md:grid-cols-3">
-                    {[
-                        [
-                            "01",
-                            "Bring your images",
-                            "Use a clear product photo for a single analysis, or upload up to 20 images for batch processing.",
-                        ],
-                        [
-                            "02",
-                            "Make the final call",
-                            "Inspect model confidence and review flags. Adjust the attributes before exporting.",
-                        ],
-                        [
-                            "03",
-                            "Take your results with you",
-                            "Export analysed entries with original predictions and corrections preserved separately.",
-                        ],
-                    ].map(([n, title, text]) => (
-                        <div key={n}>
-                            <span className="font-mono text-sm text-muted-foreground">
-                                {n} /
-                            </span>
-                            <h3 className="mt-3 font-semibold">{title}</h3>
-                            <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                                {text}
-                            </p>
-                        </div>
-                    ))}
                 </div>
             </section>
             <SampleGallery />

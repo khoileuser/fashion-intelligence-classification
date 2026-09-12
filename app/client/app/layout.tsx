@@ -34,15 +34,6 @@ export default function RootLayout({
                     </a>
                     <SiteHeader />
                     {children}
-                    <footer className="border-t">
-                        <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-3 px-6 py-8 text-xs text-muted-foreground">
-                            <span>Threadline / Fashion intelligence</span>
-                            <span>
-                                Classification, discovery, and considered
-                                decisions.
-                            </span>
-                        </div>
-                    </footer>
                 </ThemeProvider>
             </body>
         </html>

@@ -4,7 +4,7 @@ import Link from "next/link"
 import type { CatalogueItem } from "@/components/catalogue-explorer"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+
 export function SampleGallery() {
     const [items, setItems] = useState<CatalogueItem[] | null>(null),
         [error, setError] = useState(""),
@@ -32,7 +32,6 @@ export function SampleGallery() {
         >
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <Badge variant="outline">TRY IT YOURSELF</Badge>
                     <h2
                         id="sample-heading"
                         className="mt-3 text-3xl font-semibold tracking-tight"

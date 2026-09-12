@@ -20,17 +20,13 @@ export function SiteHeader() {
                         <Shirt className="size-5" />
                     </span>
                     Threadline
-                    <span className="hidden text-xs font-normal text-muted-foreground lg:inline">
-                        {" "}
-                        / Fashion intelligence
-                    </span>
                 </Link>
                 <div className="flex flex-wrap items-center gap-3 text-sm md:gap-6">
                     {[
                         ["/", "Home"],
                         ["/analyse", "Analyse"],
                         ["/catalogue", "Catalogue"],
-                        ["/insights", "Model insights"],
+                        ["/insights", "Model Insights"],
                     ].map(([href, label]) => (
                         <Link
                             key={href}
