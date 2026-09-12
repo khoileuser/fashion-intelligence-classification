@@ -1,9 +1,0 @@
-fastapi>=0.116,<1
-numpy>=2,<3
-pandas>=2.2,<4
-pillow>=11,<13
-scikit-learn>=1.6,<2
-python-multipart>=0.0.20,<1
-uvicorn[standard]>=0.35,<1
-tensorflow>=2.16,<2.22
-keras>=3.3,<4

@@ -30,8 +30,8 @@ RUN apt-get update \
     && apt-get install --no-install-recommends -y libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY app/server/requirements.txt /tmp/server-requirements.txt
-RUN python -m pip install --no-cache-dir -r /tmp/server-requirements.txt
+COPY requirements.txt /tmp/requirements.txt
+RUN python -m pip install --no-cache-dir -r /tmp/requirements.txt
 
 RUN useradd --create-home --uid 10001 fashion \
     && mkdir -p /workspace/models /workspace/dataset \
