@@ -7,17 +7,14 @@ import {
     ChartNoAxesCombined,
     Shirt,
 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
 export default function Home() {
     return (
         <main id="main-content">
             <section className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 md:px-6 md:py-24 lg:grid-cols-2">
                 <div>
-                    <Badge variant="outline" className="mb-6">
-                        FROM IMAGE TO INFORMATION
-                    </Badge>
                     <h1 className="max-w-xl text-5xl font-semibold leading-[1.08] tracking-tight md:text-7xl">
                         A clearer view
                         <br />
@@ -109,8 +106,10 @@ export default function Home() {
                         ].map(({ icon: Icon, title, text }) => (
                             <Card key={title}>
                                 <CardHeader>
-                                    <Icon className="mb-4 size-6" />
-                                    <CardTitle>{title}</CardTitle>
+                                    <CardTitle className="flex items-center gap-4">
+                                        <Icon className="size-6" />
+                                        {title}
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent className="leading-7 text-muted-foreground">
                                     {text}
