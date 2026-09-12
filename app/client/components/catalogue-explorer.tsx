@@ -199,7 +199,7 @@ export function CatalogueExplorer() {
                                 key={item.id}
                                 className="gap-0 overflow-hidden py-0"
                             >
-                                <div className="relative aspect-3/4 bg-muted/40">
+                                <div className="aspect-3/4 bg-muted/40">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         loading="lazy"
@@ -210,12 +210,6 @@ export function CatalogueExplorer() {
                                         }
                                         className="h-full w-full object-contain"
                                     />
-                                    <Badge
-                                        variant="secondary"
-                                        className="absolute left-3 top-3"
-                                    >
-                                        {item.articleType}
-                                    </Badge>
                                 </div>
                                 <CardContent className="space-y-3 p-4">
                                     <p className="text-xs text-muted-foreground">
@@ -229,7 +223,12 @@ export function CatalogueExplorer() {
                                             `${item.baseColour} ${item.articleType}`}
                                     </h2>
                                     <div className="flex flex-wrap gap-1">
-                                        {[item.season, item.usage, item.gender]
+                                        {[
+                                            item.articleType,
+                                            item.season,
+                                            item.usage,
+                                            item.gender,
+                                        ]
                                             .filter(Boolean)
                                             .map((value, i) => (
                                                 <Badge
