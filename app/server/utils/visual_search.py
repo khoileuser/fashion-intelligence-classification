@@ -47,6 +47,7 @@ class FashionVisualSearch:
     def search(
         self, image: Image.Image, top_k: int = 5,
         preferred_article_type: str | None = None,
+        exclude_ids: set[str] | None = None,
     ) -> list[dict]:
         """Rank the preferred article type first, then cosine within each group.
 
@@ -62,6 +63,9 @@ class FashionVisualSearch:
         if preferred_article_type:
             matches = self.metadata['articleType'].eq(preferred_article_type).to_numpy()
             indices = np.concatenate([indices[matches[indices]], indices[~matches[indices]]])
+        if exclude_ids:
+            ids = self.metadata['id'].astype(str).to_numpy()
+            indices = np.asarray([i for i in indices if ids[i] not in exclude_ids], dtype=int)
         indices = indices[: min(top_k, len(scores))]
         results = []
         for index in indices:
@@ -69,6 +73,9 @@ class FashionVisualSearch:
                 key: None if pd.isna(value) or value == '' else value
                 for key, value in self.metadata.iloc[int(index)].to_dict().items()
             }
+            # Paths from the training machine are not portable public metadata.
+            item.pop("image_path", None)
+            item["image_url"] = f"/api/gallery/{item['id']}/image"
             item["score"] = float(scores[index])
             results.append(item)
         return results

@@ -1,5 +1,6 @@
 """Catalogue metadata, explicitly limited to public product attributes."""
 import csv
+from scripts.preprocessing import _read_csv
 from pathlib import Path
 
 FIELDS = ('id', 'articleType', 'baseColour', 'gender', 'usage', 'subCategory', 'season', 'productDisplayName')
@@ -23,12 +24,13 @@ class Catalogue:
         details = {}
         for source_path in (data_root / 'train/styles_train.csv', data_root / 'styles.csv'):
             if source_path.is_file():
-                with source_path.open(newline='', encoding='utf-8-sig') as source:
-                    details = {row['id']: row for row in csv.DictReader(source)}
+                details = {row['id']: row for row in _read_csv(source_path).to_dict('records')}
                 break
         self.items = []
         for row in indexed:
             merged = {**details.get(row['id'], {}), **{k: v for k, v in row.items() if v}}
+            if row['id'] in details:
+                merged['productDisplayName'] = details[row['id']].get('productDisplayName', '')
             self.items.append({key: merged.get(key, '') or '' for key in FIELDS})
         self.by_id = {row['id']: row for row in self.items}
         self.facets = {key: sorted({row[key] for row in self.items if row[key]}) for key in FILTERS}

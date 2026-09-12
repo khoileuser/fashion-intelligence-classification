@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import io
+import hashlib
+import csv
 import os
 import random
 import re
@@ -76,26 +78,41 @@ async def read_image(upload: UploadFile) -> Image.Image:
     try:
         image = Image.open(io.BytesIO(content))
         image.load()
-        return image.convert("RGB")
+        decoded = image.convert("RGB")
+        decoded.info["upload_sha256"] = hashlib.sha256(content).hexdigest()
+        return decoded
     except (UnidentifiedImageError, OSError) as error:
         raise HTTPException(status_code=422, detail="Image could not be decoded") from error
 
 
+@lru_cache(maxsize=1)
+def catalogue_hashes() -> dict[str, set[str]]:
+    """Map exact uploaded catalogue files to IDs using the supplied image audit."""
+    path = ROOT / 'scripts/data/image_audit.csv'
+    if not path.is_file():
+        return {}
+    hashes = {}
+    with path.open(encoding='utf-8', newline='') as handle:
+        for row in csv.DictReader(handle):
+            if row.get('sha256') and not row.get('decode_error'):
+                hashes.setdefault(row['sha256'].lower(), set()).add(row['id'])
+    return hashes
+
+
+def uploaded_catalogue_ids(image: Image.Image) -> set[str]:
+    return catalogue_hashes().get(image.info.get('upload_sha256', ''), set())
+
+
 @app.get("/health")
 def health() -> dict[str, object]:
-    available = {
-        target: (MODEL_DIR / filename).exists()
-        for target, filename in MODEL_FILES.items()
-    }
-    available["visual_search"] = all(
-        (MODEL_DIR / filename).exists()
-        for filename in (
-            "visual_search_model.json",
-            "visual_search_embeddings.npy",
-            "visual_search_metadata.csv",
-        )
-    )
-    return {"status": "ok", "models": available, "version": app.version}
+    """Readiness includes successful classifier and search-index loading."""
+    try:
+        services = classifier_services()
+        search_service()
+    except Exception as error:
+        raise HTTPException(status_code=503, detail='Model services could not be loaded') from error
+    return {"status": "ok", "models": {**{target: True for target in services},
+                                       "visual_search": True}, "version": app.version}
 
 
 @app.get("/gallery/{item_id}/image", response_class=FileResponse)
@@ -138,7 +155,7 @@ async def search(
     image = await read_image(file)
     try:
         article = classifier_services()['articleType'].predict(image, top_k=1)
-        results = search_service().search(image, top_k, preferred_article_type=article['label'])
+        results = search_service().search(image, top_k, preferred_article_type=article['label'], exclude_ids=uploaded_catalogue_ids(image))
     except FileNotFoundError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
     return {"results": results}
@@ -158,6 +175,7 @@ async def analyse(
         }
         results = search_service().search(
             image, search_top_k, preferred_article_type=predictions['articleType']['label'],
+            exclude_ids=uploaded_catalogue_ids(image),
         )
     except FileNotFoundError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error

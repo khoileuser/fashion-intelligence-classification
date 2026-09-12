@@ -1,9 +1,6 @@
 # Fashion Intelligence Classification
 
-Keras/TensorFlow implementation of article type, season, gender and occasion
-classification, plus neural-embedding visual search. The main notebooks reproduce
-the selected model configurations; separate experimental notebooks retain the
-broader architecture investigation.
+Keras/TensorFlow implementation of article type, season, gender and occasion classification, plus neural-embedding visual search. The main notebooks reproduce the selected model configurations; separate experimental notebooks retain the broader architecture investigation.
 
 ## Layout
 
@@ -14,7 +11,7 @@ scripts/          Preprocessing and single-model prediction entrypoints
 notebooks/        Tasks 0-4: analysis, training and exports
 notebooks-test/   Full classification experiments and their runner
 models/           Only selected prediction models and the search gallery
-results/          Current measured tables and reports
+results/          Main-run results and historical tuning tables
 prediction/       Assignment prediction CSV
 ```
 
@@ -48,8 +45,7 @@ jupyter lab
 
 ## Batch run the main notebooks
 
-From the repository root, activate your TensorFlow GPU environment and run all
-Tasks 0-4 in order. Task 0 creates or validates the frozen preprocessing artifacts:
+From the repository root, activate your TensorFlow GPU environment and run all Tasks 0-4 in order. Task 0 creates or validates the frozen preprocessing artifacts:
 
 ```bash
 python notebooks/run_all.py --check
@@ -63,11 +59,7 @@ python notebooks/run_all.py --tasks 0 4
 
 ## Experimental notebooks and artifacts
 
-`notebooks-test/` contains the full architecture investigation: four shallow MLP,
-four deeper MLP and eight CNN candidates per target (64 candidates across four
-targets). It includes alternative dense widths/depths, CNN filter counts and
-learning-rate/continuation experiments. Task 3 covers both gender and occasion.
-The main notebooks do not depend on these experimental folders.
+`notebooks-test/` contains the full architecture investigation: four shallow MLP, four deeper MLP and eight CNN candidates per target (64 candidates across four targets). It includes alternative dense widths/depths, CNN filter counts and learning-rate/continuation experiments. Task 3 covers both gender and occasion. The main notebooks do not depend on these experimental folders.
 
 ```bash
 python notebooks-test/run_all.py --check

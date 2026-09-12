@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import csv
 import sys
 from pathlib import Path
 
@@ -20,8 +22,15 @@ def search_image(image_path: str | Path, top_k: int = 5) -> list[dict]:
         ROOT / "models" / "visual_search_embeddings.npy",
         ROOT / "models" / "visual_search_metadata.csv",
     )
+    audit = ROOT / 'scripts/data/image_audit.csv'
+    excluded = set()
+    if audit.is_file():
+        digest = hashlib.sha256(Path(image_path).read_bytes()).hexdigest()
+        with audit.open(encoding='utf-8', newline='') as handle:
+            excluded = {row['id'] for row in csv.DictReader(handle)
+                        if row.get('sha256', '').lower() == digest}
     with Image.open(image_path) as image:
-        results = search.search(image, top_k)
+        results = search.search(image, top_k, exclude_ids=excluded)
     for item in results:
         print(item)
     return results
