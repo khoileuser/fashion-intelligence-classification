@@ -1,8 +1,0 @@
-{
-  "gender_deeper_mlp_two_layers": {
-    "model_sha256": "51db661c544dfd40ae4536b3db44660d388b41df47d5a21d0f4c0351293465b6",
-    "selection_accuracy": 0.8451724137931035,
-    "selection_macro_f1": 0.6911768175599706,
-    "tensorflow": "2.20.0"
-  }
-}
