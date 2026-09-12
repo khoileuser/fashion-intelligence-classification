@@ -16,6 +16,25 @@ sys.path.insert(0, str(ROOT))
 from app.server.utils.visual_search import FashionVisualSearch
 
 
+def print_search_results(results: list[dict], image_path: str | Path) -> None:
+    print("\nVisual search")
+    print("-------------")
+    print(f"Image: {image_path}")
+    print(f"Matches: {len(results)}")
+    if not results:
+        print("No matching products found.\n")
+        return
+    print("\n")
+    for rank, item in enumerate(results, 1):
+        name = item.get("productDisplayName") or item.get("articleType") or "Product"
+        print(f"{rank}. {name} (ID: {item['id']})")
+        print(f"Similarity: {item['score']:.4f}")
+        attributes = [str(item[key]) for key in ("articleType", "baseColour", "season", "gender", "usage") if item.get(key)]
+        if attributes:
+            print(" | ".join(attributes))
+        print()
+
+
 def search_image(image_path: str | Path, top_k: int = 5) -> list[dict]:
     search = FashionVisualSearch(
         ROOT / "models" / "visual_search_model.json",
@@ -31,8 +50,7 @@ def search_image(image_path: str | Path, top_k: int = 5) -> list[dict]:
                         if row.get('sha256', '').lower() == digest}
     with Image.open(image_path) as image:
         results = search.search(image, top_k, exclude_ids=excluded)
-    for item in results:
-        print(item)
+    print_search_results(results, image_path)
     return results
 
 

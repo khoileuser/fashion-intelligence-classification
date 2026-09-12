@@ -16,10 +16,33 @@ from app.server.utils.classifier import FashionClassifier
 MODEL_PATH = ROOT / "models" / "usage_model.keras"
 
 
+def print_classification(result: dict, image_path: str | Path) -> None:
+    titles = {"articleType": "Article type", "season": "Season",
+              "gender": "Gender / audience", "usage": "Occasion"}
+    title = titles.get(result["target"], result["target"])
+    print(f"\n{title} prediction")
+    print("-" * (len(title) + 11))
+    print(f"Image: {image_path}")
+    print(f"Prediction: {result['label']}")
+    print(f"Confidence: {result['confidence']:.2%}")
+    print("\nTop predictions")
+    ranked = result["top_k"]
+    width = max(len("Label"), *(len(item["label"]) for item in ranked))
+    print(f"{'Rank':<4}  {'Label':<{width}}  {'Confidence':>10}")
+    for rank, item in enumerate(ranked, 1):
+        print(f"{rank:<4}  {item['label']:<{width}}  {item['confidence']:>10.2%}")
+    if "needs_review" in result:
+        status = "Requested" if result["needs_review"] else "Not requested"
+        print(f"\nHuman review: {status}")
+        if result.get("review_reason"):
+            print(f"Reason: {result['review_reason']}")
+    print()
+
+
 def classify_occasion(image_path: str | Path, model_path: str | Path = MODEL_PATH) -> dict:
     with Image.open(image_path) as image:
         result = FashionClassifier(model_path).predict(image)
-    print(result)
+    print_classification(result, image_path)
     return result
 
 

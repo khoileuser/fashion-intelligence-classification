@@ -27,8 +27,7 @@ prediction/       Assignment prediction CSV
 python -m venv venv
 .\venv\Scripts\python.exe -m pip install --upgrade pip
 .\venv\Scripts\python.exe -m pip install -r requirements.txt
-.\venv\Scripts\python.exe -m ipykernel install --user --name fashion-intelligence-classification --display-name "Fashion Intelligence Classification"
-.\venv\Scripts\python.exe -m jupyterlab
+.\venv\Scripts\activate
 ```
 
 ### NVIDIA GPU using Linux/WSL2 (Bash)
@@ -39,35 +38,6 @@ source ./venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements-cuda.txt
 python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-python -m ipykernel install --user --name fashion-intelligence-classification  --display-name "Fashion Intelligence Classification"
-jupyter lab
-```
-
-## Batch run the main notebooks
-
-From the repository root, activate your TensorFlow GPU environment and run all Tasks 0-4 in order. Task 0 creates or validates the frozen preprocessing artifacts:
-
-```bash
-python notebooks/run_all.py --check
-python notebooks/run_all.py
-
-# Run selected tasks only (always executed in numerical order):
-python notebooks/run_all.py --tasks 1
-python notebooks/run_all.py --tasks 2 3
-python notebooks/run_all.py --tasks 0 4
-```
-
-## Experimental notebooks and artifacts
-
-`notebooks-test/` contains the full architecture investigation: four shallow MLP, four deeper MLP and eight CNN candidates per target (64 candidates across four targets). It includes alternative dense widths/depths, CNN filter counts and learning-rate/continuation experiments. Task 3 covers both gender and occasion. The main notebooks do not depend on these experimental folders.
-
-```bash
-python notebooks-test/run_all.py --check
-python notebooks-test/run_all.py
-
-# Assign different tasks to separate machines:
-python notebooks-test/run_all.py --tasks 1
-python notebooks-test/run_all.py --tasks 2 3
 ```
 
 ## Prediction scripts
@@ -100,3 +70,30 @@ bun dev
 ```
 
 Open `http://localhost:3000`; proxied API documentation is at `http://localhost:3000/api/docs`. In production, the same page is available at `https://your-domain.example/api/docs` when the domain targets only the client service. The OpenAPI document is served at `/api/openapi.json`.
+
+## Batch run the main notebooks
+
+From the repository root, activate your TensorFlow GPU environment and run all Tasks 0-4 in order. Task 0 creates or validates the frozen preprocessing artifacts:
+
+```bash
+python notebooks/run_all.py --check
+python notebooks/run_all.py
+
+# Run selected tasks only (always executed in numerical order):
+python notebooks/run_all.py --tasks 1
+python notebooks/run_all.py --tasks 2 3
+python notebooks/run_all.py --tasks 0 4
+```
+
+## Experimental notebooks and artifacts
+
+`notebooks-test/` contains the full architecture investigation: four shallow MLP, four deeper MLP and eight CNN candidates per target (64 candidates across four targets). It includes alternative dense widths/depths, CNN filter counts and learning-rate/continuation experiments. Task 3 covers both gender and occasion. The main notebooks do not depend on these experimental folders.
+
+```bash
+python notebooks-test/run_all.py --check
+python notebooks-test/run_all.py
+
+# Assign different tasks to separate machines:
+python notebooks-test/run_all.py --tasks 1
+python notebooks-test/run_all.py --tasks 2 3
+```
