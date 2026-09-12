@@ -7,12 +7,15 @@ import os
 import re
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
 from PIL import Image, UnidentifiedImageError
 
 from app.server.utils.classifier import FashionClassifier
+from app.server.utils.catalogue import Catalogue
+from app.server.utils.gradcam import gradcam
 from app.server.utils.visual_search import FashionVisualSearch
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -34,6 +37,9 @@ app = FastAPI(
     title="Fashion Intelligence API",
     description="Classification and visual-search inference for fashion images.",
     version="1.0.0",
+    # The public reverse proxy exposes this service under /api.
+    # FastAPI uses root_path when generating the Swagger schema URL.
+    root_path="/api",
 )
 
 
@@ -154,3 +160,66 @@ async def analyse(
     except FileNotFoundError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
     return {"predictions": predictions, "similar_items": results}
+
+
+@lru_cache(maxsize=1)
+def catalogue_service():
+    return Catalogue(MODEL_DIR / 'visual_search_metadata.csv', DATA_ROOT)
+
+
+def available_catalogue():
+    try:
+        return catalogue_service()
+    except FileNotFoundError as error:
+        raise HTTPException(status_code=503, detail='Catalogue metadata is unavailable') from error
+
+
+@app.get('/catalogue/samples')
+def catalogue_samples():
+    return {'items': available_catalogue().samples()}
+
+
+@app.get('/catalogue')
+def catalogue(
+    q: str = Query('', max_length=200),
+    articleType: str = Query('', max_length=100), season: str = Query('', max_length=100),
+    usage: str = Query('', max_length=100), gender: str = Query('', max_length=100),
+    baseColour: str = Query('', max_length=100),
+    page: int = Query(1, ge=1), page_size: int = Query(12, ge=1, le=48),
+    similar_to: str | None = Query(None, pattern=r'^\d+$', max_length=20),
+):
+    service = available_catalogue()
+    items = service.filter(q, articleType=articleType, season=season, usage=usage, gender=gender, baseColour=baseColour)
+    reference = None
+    if similar_to is not None:
+        reference = service.by_id.get(similar_to)
+        if reference is None:
+            raise HTTPException(status_code=404, detail='Reference product not found')
+        try:
+            ranked = search_service().similar_by_id(similar_to, {row['id'] for row in items})
+        except FileNotFoundError as error:
+            raise HTTPException(status_code=503, detail='Visual search artifacts are unavailable') from error
+        except ValueError as error:
+            raise HTTPException(status_code=503, detail=str(error)) from error
+        items = [{**service.by_id[item_id], 'score': score} for item_id, score in ranked]
+    total = len(items)
+    pages = max(1, (total + page_size - 1) // page_size)
+    page = min(page, pages)
+    return {'items': items[(page - 1) * page_size:page * page_size], 'total': total,
+            'page': page, 'pages': pages, 'facets': service.facets, 'reference': reference}
+
+
+@app.post('/explain')
+async def explain(
+    file: UploadFile = File(...),
+    target: Literal['articleType', 'season', 'gender', 'usage'] = Query('articleType'),
+    label: str | None = Query(None, max_length=150),
+):
+    image = await read_image(file)
+    try:
+        service = classifier_services()[target]
+        return gradcam(service, image, label)
+    except FileNotFoundError as error:
+        raise HTTPException(status_code=503, detail='Classifier artifacts are unavailable') from error
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error

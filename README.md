@@ -50,7 +50,7 @@ jupyter lab
 ## Batch run the main notebooks
 
 From the repository root, activate your TensorFlow GPU environment and run all
-Tasks 0?4 in order. Task 0 creates or validates the frozen preprocessing artifacts:
+Tasks 0-4 in order. Task 0 creates or validates the frozen preprocessing artifacts:
 
 ```bash
 python notebooks/run_all.py --check
@@ -108,4 +108,4 @@ $env:BACKEND_URL = "http://127.0.0.1:8000"
 bun dev
 ```
 
-Open `http://localhost:3000`; API documentation is at `http://127.0.0.1:8000/docs`.
+Open `http://localhost:3000`; proxied API documentation is at `http://localhost:3000/api/docs`. In production, the same page is available at `https://your-domain.example/api/docs` when the domain targets only the client service. The OpenAPI document is served at `/api/openapi.json`.

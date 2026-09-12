@@ -1,0 +1,1362 @@
+[
+  {
+    "target": "articleType",
+    "selected": "cnn_continue_weighted",
+    "cnn_selected": "cnn_continue_weighted",
+    "framework": "tensorflow_keras",
+    "model_file": "article_type_model.keras",
+    "test_metrics": {
+      "accuracy": 0.8634137810423225,
+      "macro_f1": 0.6413678674484741,
+      "ece": 0.043308230459002096,
+      "nll": 0.48856672644615173,
+      "brier": 0.200232006557269
+    },
+    "split_sizes": {
+      "train": 27051,
+      "selection": 2900,
+      "calibration": 1378,
+      "policy": 1564
+    },
+    "test_scope": "internal_test_with_prior_development_exposure",
+    "title": "Article type",
+    "stem": "article_type",
+    "labels": [
+      "Accessory Gift Set",
+      "Baby Dolls",
+      "Backpacks",
+      "Bangle",
+      "Basketballs",
+      "Belts",
+      "Blazers",
+      "Body Wash and Scrub",
+      "Booties",
+      "Boxers",
+      "Bra",
+      "Bracelet",
+      "Briefs",
+      "Camisoles",
+      "Capris",
+      "Caps",
+      "Casual Shoes",
+      "Churidar",
+      "Clothing Set",
+      "Clutches",
+      "Compact",
+      "Concealer",
+      "Cufflinks",
+      "Cushion Covers",
+      "Deodorant",
+      "Dresses",
+      "Duffel Bag",
+      "Dupatta",
+      "Earrings",
+      "Eyeshadow",
+      "Flats",
+      "Flip Flops",
+      "Footballs",
+      "Formal Shoes",
+      "Foundation and Primer",
+      "Fragrance Gift Set",
+      "Free Gifts",
+      "Gloves",
+      "Handbags",
+      "Hat",
+      "Headband",
+      "Heels",
+      "Highlighter and Blush",
+      "Innerwear Vests",
+      "Ipad",
+      "Jackets",
+      "Jeans",
+      "Jeggings",
+      "Jewellery Set",
+      "Jumpsuit",
+      "Kajal and Eyeliner",
+      "Key chain",
+      "Kurta Sets",
+      "Kurtas",
+      "Kurtis",
+      "Laptop Bag",
+      "Leggings",
+      "Lehenga Choli",
+      "Lip Gloss",
+      "Lip Liner",
+      "Lip Plumper",
+      "Lipstick",
+      "Lounge Pants",
+      "Lounge Shorts",
+      "Lounge Tshirts",
+      "Messenger Bag",
+      "Mobile Pouch",
+      "Mufflers",
+      "Nail Polish",
+      "Necklace and Chains",
+      "Nehru Jackets",
+      "Night suits",
+      "Nightdress",
+      "Patiala",
+      "Pendant",
+      "Perfume and Body Mist",
+      "Rain Jacket",
+      "Rain Trousers",
+      "Ring",
+      "Robe",
+      "Rompers",
+      "Rucksacks",
+      "Salwar",
+      "Salwar and Dupatta",
+      "Sandals",
+      "Sarees",
+      "Scarves",
+      "Shapewear",
+      "Shirts",
+      "Shoe Accessories",
+      "Shoe Laces",
+      "Shorts",
+      "Shrug",
+      "Skirts",
+      "Socks",
+      "Sports Sandals",
+      "Sports Shoes",
+      "Stockings",
+      "Stoles",
+      "Sunglasses",
+      "Suspenders",
+      "Sweaters",
+      "Sweatshirts",
+      "Swimwear",
+      "Tablet Sleeve",
+      "Ties",
+      "Ties and Cufflinks",
+      "Tights",
+      "Tops",
+      "Track Pants",
+      "Tracksuits",
+      "Travel Accessory",
+      "Trolley Bag",
+      "Trousers",
+      "Trunk",
+      "Tshirts",
+      "Tunics",
+      "Umbrellas",
+      "Waist Pouch",
+      "Waistcoat",
+      "Wallets",
+      "Watches",
+      "Water Bottle",
+      "Wristbands"
+    ],
+    "comparison": [
+      {
+        "": "cnn_continue_weighted",
+        "family": "cnn",
+        "validation_accuracy": "0.8696551724137931",
+        "validation_macro_f1": "0.6964320883810664",
+        "complexity_parameters": "684604",
+        "epochs_run": "8",
+        "selected": "True"
+      },
+      {
+        "": "shallow_mlp_lower_lr",
+        "family": "shallow_mlp",
+        "validation_accuracy": "0.7420689655172413",
+        "validation_macro_f1": "0.44320152900303555",
+        "complexity_parameters": "9469308",
+        "epochs_run": "15",
+        "selected": "False"
+      },
+      {
+        "": "deeper_mlp_two_layers",
+        "family": "deeper_mlp",
+        "validation_accuracy": "0.7324137931034482",
+        "validation_macro_f1": "0.3783012712188087",
+        "complexity_parameters": "9486332",
+        "epochs_run": "20",
+        "selected": "False"
+      }
+    ],
+    "per_class": [
+      {
+        "": "Accessory Gift Set",
+        "precision": "1.0",
+        "recall": "1.0",
+        "f1-score": "1.0",
+        "support": "18.0"
+      },
+      {
+        "": "Baby Dolls",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Backpacks",
+        "precision": "0.8793103448275862",
+        "recall": "0.9272727272727272",
+        "f1-score": "0.9026548672566371",
+        "support": "110.0"
+      },
+      {
+        "": "Bangle",
+        "precision": "0.4",
+        "recall": "1.0",
+        "f1-score": "0.5714285714285714",
+        "support": "2.0"
+      },
+      {
+        "": "Basketballs",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "1.0"
+      },
+      {
+        "": "Belts",
+        "precision": "0.9924812030075187",
+        "recall": "1.0",
+        "f1-score": "0.9962264150943396",
+        "support": "132.0"
+      },
+      {
+        "": "Blazers",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "3.0"
+      },
+      {
+        "": "Body Wash and Scrub",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Booties",
+        "precision": "0.5",
+        "recall": "1.0",
+        "f1-score": "0.6666666666666666",
+        "support": "2.0"
+      },
+      {
+        "": "Boxers",
+        "precision": "1.0",
+        "recall": "0.4",
+        "f1-score": "0.5714285714285714",
+        "support": "5.0"
+      },
+      {
+        "": "Bra",
+        "precision": "1.0",
+        "recall": "0.9354838709677419",
+        "f1-score": "0.9666666666666667",
+        "support": "31.0"
+      },
+      {
+        "": "Bracelet",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "1.0"
+      },
+      {
+        "": "Briefs",
+        "precision": "0.9801980198019802",
+        "recall": "0.9339622641509434",
+        "f1-score": "0.9565217391304348",
+        "support": "106.0"
+      },
+      {
+        "": "Camisoles",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "1.0"
+      },
+      {
+        "": "Capris",
+        "precision": "0.5806451612903226",
+        "recall": "0.6923076923076923",
+        "f1-score": "0.631578947368421",
+        "support": "26.0"
+      },
+      {
+        "": "Caps",
+        "precision": "0.9459459459459459",
+        "recall": "0.8333333333333334",
+        "f1-score": "0.8860759493670886",
+        "support": "42.0"
+      },
+      {
+        "": "Casual Shoes",
+        "precision": "0.8816120906801007",
+        "recall": "0.7990867579908676",
+        "f1-score": "0.8383233532934131",
+        "support": "438.0"
+      },
+      {
+        "": "Churidar",
+        "precision": "0.3333333333333333",
+        "recall": "1.0",
+        "f1-score": "0.5",
+        "support": "2.0"
+      },
+      {
+        "": "Clothing Set",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "1.0"
+      },
+      {
+        "": "Clutches",
+        "precision": "0.6923076923076923",
+        "recall": "0.6923076923076923",
+        "f1-score": "0.6923076923076923",
+        "support": "26.0"
+      },
+      {
+        "": "Compact",
+        "precision": "1.0",
+        "recall": "1.0",
+        "f1-score": "1.0",
+        "support": "1.0"
+      },
+      {
+        "": "Concealer",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Cufflinks",
+        "precision": "0.6666666666666666",
+        "recall": "1.0",
+        "f1-score": "0.8",
+        "support": "4.0"
+      },
+      {
+        "": "Cushion Covers",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Deodorant",
+        "precision": "0.9393939393939394",
+        "recall": "0.9117647058823529",
+        "f1-score": "0.9253731343283582",
+        "support": "34.0"
+      },
+      {
+        "": "Dresses",
+        "precision": "0.6515151515151515",
+        "recall": "0.7413793103448276",
+        "f1-score": "0.6935483870967742",
+        "support": "58.0"
+      },
+      {
+        "": "Duffel Bag",
+        "precision": "1.0",
+        "recall": "0.6666666666666666",
+        "f1-score": "0.8",
+        "support": "18.0"
+      },
+      {
+        "": "Dupatta",
+        "precision": "0.7894736842105263",
+        "recall": "0.7142857142857143",
+        "f1-score": "0.75",
+        "support": "21.0"
+      },
+      {
+        "": "Earrings",
+        "precision": "0.8235294117647058",
+        "recall": "0.875",
+        "f1-score": "0.8484848484848485",
+        "support": "16.0"
+      },
+      {
+        "": "Eyeshadow",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Flats",
+        "precision": "0.3333333333333333",
+        "recall": "0.5",
+        "f1-score": "0.4",
+        "support": "40.0"
+      },
+      {
+        "": "Flip Flops",
+        "precision": "0.7984496124031008",
+        "recall": "0.8728813559322034",
+        "f1-score": "0.8340080971659919",
+        "support": "118.0"
+      },
+      {
+        "": "Footballs",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "1.0"
+      },
+      {
+        "": "Formal Shoes",
+        "precision": "0.8412698412698413",
+        "recall": "0.9298245614035088",
+        "f1-score": "0.8833333333333333",
+        "support": "114.0"
+      },
+      {
+        "": "Foundation and Primer",
+        "precision": "1.0",
+        "recall": "1.0",
+        "f1-score": "1.0",
+        "support": "3.0"
+      },
+      {
+        "": "Fragrance Gift Set",
+        "precision": "0.625",
+        "recall": "0.7142857142857143",
+        "f1-score": "0.6666666666666666",
+        "support": "7.0"
+      },
+      {
+        "": "Free Gifts",
+        "precision": "0.5",
+        "recall": "0.16666666666666666",
+        "f1-score": "0.25",
+        "support": "6.0"
+      },
+      {
+        "": "Gloves",
+        "precision": "1.0",
+        "recall": "0.3333333333333333",
+        "f1-score": "0.5",
+        "support": "3.0"
+      },
+      {
+        "": "Handbags",
+        "precision": "0.907608695652174",
+        "recall": "0.8978494623655914",
+        "f1-score": "0.9027027027027027",
+        "support": "186.0"
+      },
+      {
+        "": "Hat",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Headband",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "2.0"
+      },
+      {
+        "": "Heels",
+        "precision": "0.8862275449101796",
+        "recall": "0.8176795580110497",
+        "f1-score": "0.8505747126436781",
+        "support": "181.0"
+      },
+      {
+        "": "Highlighter and Blush",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Innerwear Vests",
+        "precision": "0.9411764705882353",
+        "recall": "0.8",
+        "f1-score": "0.8648648648648649",
+        "support": "40.0"
+      },
+      {
+        "": "Ipad",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Jackets",
+        "precision": "0.53125",
+        "recall": "0.4722222222222222",
+        "f1-score": "0.5",
+        "support": "36.0"
+      },
+      {
+        "": "Jeans",
+        "precision": "0.891566265060241",
+        "recall": "0.8604651162790697",
+        "f1-score": "0.8757396449704142",
+        "support": "86.0"
+      },
+      {
+        "": "Jeggings",
+        "precision": "0.5",
+        "recall": "0.5",
+        "f1-score": "0.5",
+        "support": "2.0"
+      },
+      {
+        "": "Jewellery Set",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "1.0"
+      },
+      {
+        "": "Jumpsuit",
+        "precision": "1.0",
+        "recall": "1.0",
+        "f1-score": "1.0",
+        "support": "1.0"
+      },
+      {
+        "": "Kajal and Eyeliner",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Key chain",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Kurta Sets",
+        "precision": "0.7777777777777778",
+        "recall": "1.0",
+        "f1-score": "0.875",
+        "support": "14.0"
+      },
+      {
+        "": "Kurtas",
+        "precision": "0.91701244813278",
+        "recall": "0.9246861924686193",
+        "f1-score": "0.9208333333333333",
+        "support": "239.0"
+      },
+      {
+        "": "Kurtis",
+        "precision": "0.4634146341463415",
+        "recall": "0.48717948717948717",
+        "f1-score": "0.475",
+        "support": "39.0"
+      },
+      {
+        "": "Laptop Bag",
+        "precision": "0.3333333333333333",
+        "recall": "0.3076923076923077",
+        "f1-score": "0.32",
+        "support": "13.0"
+      },
+      {
+        "": "Leggings",
+        "precision": "0.7692307692307693",
+        "recall": "0.7692307692307693",
+        "f1-score": "0.7692307692307693",
+        "support": "26.0"
+      },
+      {
+        "": "Lehenga Choli",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Lip Gloss",
+        "precision": "1.0",
+        "recall": "1.0",
+        "f1-score": "1.0",
+        "support": "1.0"
+      },
+      {
+        "": "Lip Liner",
+        "precision": "1.0",
+        "recall": "0.75",
+        "f1-score": "0.8571428571428571",
+        "support": "4.0"
+      },
+      {
+        "": "Lip Plumper",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Lipstick",
+        "precision": "1.0",
+        "recall": "1.0",
+        "f1-score": "1.0",
+        "support": "3.0"
+      },
+      {
+        "": "Lounge Pants",
+        "precision": "0.5",
+        "recall": "0.6",
+        "f1-score": "0.5454545454545454",
+        "support": "15.0"
+      },
+      {
+        "": "Lounge Shorts",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "4.0"
+      },
+      {
+        "": "Lounge Tshirts",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Messenger Bag",
+        "precision": "0.16666666666666666",
+        "recall": "0.2",
+        "f1-score": "0.18181818181818182",
+        "support": "5.0"
+      },
+      {
+        "": "Mobile Pouch",
+        "precision": "0.3333333333333333",
+        "recall": "0.4",
+        "f1-score": "0.36363636363636365",
+        "support": "5.0"
+      },
+      {
+        "": "Mufflers",
+        "precision": "1.0",
+        "recall": "0.8",
+        "f1-score": "0.8888888888888888",
+        "support": "5.0"
+      },
+      {
+        "": "Nail Polish",
+        "precision": "1.0",
+        "recall": "1.0",
+        "f1-score": "1.0",
+        "support": "1.0"
+      },
+      {
+        "": "Necklace and Chains",
+        "precision": "0.8",
+        "recall": "0.5333333333333333",
+        "f1-score": "0.64",
+        "support": "15.0"
+      },
+      {
+        "": "Nehru Jackets",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Night suits",
+        "precision": "0.6666666666666666",
+        "recall": "0.8333333333333334",
+        "f1-score": "0.7407407407407407",
+        "support": "12.0"
+      },
+      {
+        "": "Nightdress",
+        "precision": "0.3333333333333333",
+        "recall": "0.5",
+        "f1-score": "0.4",
+        "support": "2.0"
+      },
+      {
+        "": "Patiala",
+        "precision": "1.0",
+        "recall": "0.75",
+        "f1-score": "0.8571428571428571",
+        "support": "4.0"
+      },
+      {
+        "": "Pendant",
+        "precision": "0.7777777777777778",
+        "recall": "1.0",
+        "f1-score": "0.875",
+        "support": "7.0"
+      },
+      {
+        "": "Perfume and Body Mist",
+        "precision": "0.9270833333333334",
+        "recall": "0.9270833333333334",
+        "f1-score": "0.9270833333333334",
+        "support": "96.0"
+      },
+      {
+        "": "Rain Jacket",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Rain Trousers",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Ring",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "2.0"
+      },
+      {
+        "": "Robe",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Rompers",
+        "precision": "1.0",
+        "recall": "1.0",
+        "f1-score": "1.0",
+        "support": "1.0"
+      },
+      {
+        "": "Rucksacks",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "1.0"
+      },
+      {
+        "": "Salwar",
+        "precision": "0.75",
+        "recall": "0.75",
+        "f1-score": "0.75",
+        "support": "4.0"
+      },
+      {
+        "": "Salwar and Dupatta",
+        "precision": "1.0",
+        "recall": "0.5",
+        "f1-score": "0.6666666666666666",
+        "support": "2.0"
+      },
+      {
+        "": "Sandals",
+        "precision": "0.8518518518518519",
+        "recall": "0.7796610169491526",
+        "f1-score": "0.8141592920353983",
+        "support": "118.0"
+      },
+      {
+        "": "Sarees",
+        "precision": "0.9354838709677419",
+        "recall": "1.0",
+        "f1-score": "0.9666666666666667",
+        "support": "29.0"
+      },
+      {
+        "": "Scarves",
+        "precision": "0.6521739130434783",
+        "recall": "0.8823529411764706",
+        "f1-score": "0.75",
+        "support": "17.0"
+      },
+      {
+        "": "Shapewear",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Shirts",
+        "precision": "0.9417249417249417",
+        "recall": "0.9550827423167849",
+        "f1-score": "0.9483568075117371",
+        "support": "423.0"
+      },
+      {
+        "": "Shoe Accessories",
+        "precision": "1.0",
+        "recall": "0.16666666666666666",
+        "f1-score": "0.2857142857142857",
+        "support": "6.0"
+      },
+      {
+        "": "Shoe Laces",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Shorts",
+        "precision": "0.8604651162790697",
+        "recall": "0.8222222222222222",
+        "f1-score": "0.8409090909090909",
+        "support": "90.0"
+      },
+      {
+        "": "Shrug",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Skirts",
+        "precision": "0.9444444444444444",
+        "recall": "0.6538461538461539",
+        "f1-score": "0.7727272727272727",
+        "support": "26.0"
+      },
+      {
+        "": "Socks",
+        "precision": "0.9560439560439561",
+        "recall": "0.9775280898876404",
+        "f1-score": "0.9666666666666667",
+        "support": "89.0"
+      },
+      {
+        "": "Sports Sandals",
+        "precision": "0.7777777777777778",
+        "recall": "0.5833333333333334",
+        "f1-score": "0.6666666666666666",
+        "support": "12.0"
+      },
+      {
+        "": "Sports Shoes",
+        "precision": "0.8268156424581006",
+        "recall": "0.8942598187311178",
+        "f1-score": "0.8592162554426706",
+        "support": "331.0"
+      },
+      {
+        "": "Stockings",
+        "precision": "1.0",
+        "recall": "1.0",
+        "f1-score": "1.0",
+        "support": "1.0"
+      },
+      {
+        "": "Stoles",
+        "precision": "0.7692307692307693",
+        "recall": "0.7142857142857143",
+        "f1-score": "0.7407407407407407",
+        "support": "14.0"
+      },
+      {
+        "": "Sunglasses",
+        "precision": "1.0",
+        "recall": "1.0",
+        "f1-score": "1.0",
+        "support": "119.0"
+      },
+      {
+        "": "Suspenders",
+        "precision": "1.0",
+        "recall": "0.9230769230769231",
+        "f1-score": "0.96",
+        "support": "13.0"
+      },
+      {
+        "": "Sweaters",
+        "precision": "0.7",
+        "recall": "0.6363636363636364",
+        "f1-score": "0.6666666666666666",
+        "support": "44.0"
+      },
+      {
+        "": "Sweatshirts",
+        "precision": "0.5740740740740741",
+        "recall": "0.7560975609756098",
+        "f1-score": "0.6526315789473685",
+        "support": "41.0"
+      },
+      {
+        "": "Swimwear",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "2.0"
+      },
+      {
+        "": "Tablet Sleeve",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "1.0"
+      },
+      {
+        "": "Ties",
+        "precision": "1.0",
+        "recall": "0.9629629629629629",
+        "f1-score": "0.9811320754716981",
+        "support": "27.0"
+      },
+      {
+        "": "Ties and Cufflinks",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Tights",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "1.0"
+      },
+      {
+        "": "Tops",
+        "precision": "0.7027027027027027",
+        "recall": "0.624",
+        "f1-score": "0.6610169491525424",
+        "support": "250.0"
+      },
+      {
+        "": "Track Pants",
+        "precision": "0.7777777777777778",
+        "recall": "0.7291666666666666",
+        "f1-score": "0.7526881720430108",
+        "support": "48.0"
+      },
+      {
+        "": "Tracksuits",
+        "precision": "0.75",
+        "recall": "1.0",
+        "f1-score": "0.8571428571428571",
+        "support": "3.0"
+      },
+      {
+        "": "Travel Accessory",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "3.0"
+      },
+      {
+        "": "Trolley Bag",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Trousers",
+        "precision": "0.8292682926829268",
+        "recall": "0.9066666666666666",
+        "f1-score": "0.8662420382165605",
+        "support": "75.0"
+      },
+      {
+        "": "Trunk",
+        "precision": "0.7878787878787878",
+        "recall": "0.9285714285714286",
+        "f1-score": "0.8524590163934426",
+        "support": "28.0"
+      },
+      {
+        "": "Tshirts",
+        "precision": "0.9204771371769384",
+        "recall": "0.9410569105691057",
+        "f1-score": "0.9306532663316583",
+        "support": "984.0"
+      },
+      {
+        "": "Tunics",
+        "precision": "0.43478260869565216",
+        "recall": "0.30303030303030304",
+        "f1-score": "0.35714285714285715",
+        "support": "33.0"
+      },
+      {
+        "": "Umbrellas",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "Waist Pouch",
+        "precision": "0.4",
+        "recall": "1.0",
+        "f1-score": "0.5714285714285714",
+        "support": "2.0"
+      },
+      {
+        "": "Waistcoat",
+        "precision": "1.0",
+        "recall": "0.5",
+        "f1-score": "0.6666666666666666",
+        "support": "2.0"
+      },
+      {
+        "": "Wallets",
+        "precision": "0.9147286821705426",
+        "recall": "0.944",
+        "f1-score": "0.9291338582677166",
+        "support": "125.0"
+      },
+      {
+        "": "Watches",
+        "precision": "0.9747634069400631",
+        "recall": "0.9903846153846154",
+        "f1-score": "0.9825119236883942",
+        "support": "312.0"
+      },
+      {
+        "": "Water Bottle",
+        "precision": "0.3333333333333333",
+        "recall": "0.5",
+        "f1-score": "0.4",
+        "support": "2.0"
+      },
+      {
+        "": "Wristbands",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "1.0"
+      }
+    ]
+  },
+  {
+    "target": "season",
+    "selected": "cnn_continue",
+    "cnn_selected": "cnn_continue",
+    "framework": "tensorflow_keras",
+    "model_file": "season_model.keras",
+    "test_metrics": {
+      "accuracy": 0.7391076115485564,
+      "macro_f1": 0.7225275273758592,
+      "ece": 0.030766072913626256,
+      "nll": 0.6426904797554016,
+      "brier": 0.3544544456400661
+    },
+    "split_sizes": {
+      "train": 27038,
+      "selection": 2964,
+      "calibration": 1445,
+      "policy": 1429
+    },
+    "test_scope": "internal_test_with_prior_development_exposure",
+    "title": "Season",
+    "stem": "season",
+    "labels": [
+      "Fall",
+      "Spring",
+      "Summer",
+      "Winter"
+    ],
+    "comparison": [
+      {
+        "": "cnn_continue",
+        "family": "cnn",
+        "validation_accuracy": "0.7577597840755735",
+        "validation_macro_f1": "0.7394009003766844",
+        "complexity_parameters": "653764",
+        "epochs_run": "8",
+        "selected": "True"
+      },
+      {
+        "": "shallow_mlp_128",
+        "family": "shallow_mlp",
+        "validation_accuracy": "0.6997300944669366",
+        "validation_macro_f1": "0.6578547363614108",
+        "complexity_parameters": "4719236",
+        "epochs_run": "20",
+        "selected": "False"
+      },
+      {
+        "": "deeper_mlp_two_layers",
+        "family": "deeper_mlp",
+        "validation_accuracy": "0.6869095816464238",
+        "validation_macro_f1": "0.6458106575598119",
+        "complexity_parameters": "9470852",
+        "epochs_run": "20",
+        "selected": "False"
+      }
+    ],
+    "per_class": [
+      {
+        "": "Fall",
+        "precision": "0.7074047447879224",
+        "recall": "0.6344294003868471",
+        "f1-score": "0.6689326988443236",
+        "support": "1551.0"
+      },
+      {
+        "": "Spring",
+        "precision": "0.9727891156462585",
+        "recall": "0.5766129032258065",
+        "f1-score": "0.7240506329113924",
+        "support": "248.0"
+      },
+      {
+        "": "Summer",
+        "precision": "0.7373143564356436",
+        "recall": "0.8317626527050611",
+        "f1-score": "0.7816959160242742",
+        "support": "2865.0"
+      },
+      {
+        "": "Winter",
+        "precision": "0.7555555555555555",
+        "recall": "0.6793529971455756",
+        "f1-score": "0.7154308617234469",
+        "support": "1051.0"
+      }
+    ]
+  },
+  {
+    "target": "gender",
+    "selected": "cnn_four_blocks_scheduled",
+    "cnn_selected": "cnn_four_blocks_scheduled",
+    "framework": "tensorflow_keras",
+    "model_file": "gender_model.keras",
+    "test_metrics": {
+      "accuracy": 0.8891220706540749,
+      "macro_f1": 0.7398206402920422,
+      "ece": 0.021677308584602213,
+      "nll": 0.30672353506088257,
+      "brier": 0.16325914026673252
+    },
+    "split_sizes": {
+      "train": 27051,
+      "selection": 2900,
+      "calibration": 1378,
+      "policy": 1564
+    },
+    "test_scope": "internal_test_with_prior_development_exposure",
+    "title": "Gender",
+    "stem": "gender",
+    "labels": [
+      "Boys",
+      "Girls",
+      "Men",
+      "Unisex",
+      "Women"
+    ],
+    "comparison": [
+      {
+        "": "cnn_four_blocks_scheduled",
+        "family": "cnn",
+        "validation_accuracy": "0.8993103448275862",
+        "validation_macro_f1": "0.7901228224704215",
+        "complexity_parameters": "654021",
+        "epochs_run": "20",
+        "selected": "True"
+      },
+      {
+        "": "shallow_mlp_lower_lr",
+        "family": "shallow_mlp",
+        "validation_accuracy": "0.8468965517241379",
+        "validation_macro_f1": "0.7117527943783131",
+        "complexity_parameters": "9438725",
+        "epochs_run": "12",
+        "selected": "False"
+      },
+      {
+        "": "deeper_mlp_two_layers",
+        "family": "deeper_mlp",
+        "validation_accuracy": "0.8451724137931035",
+        "validation_macro_f1": "0.6911768175599706",
+        "complexity_parameters": "9470981",
+        "epochs_run": "20",
+        "selected": "False"
+      }
+    ],
+    "per_class": [
+      {
+        "": "Boys",
+        "precision": "0.6859504132231405",
+        "recall": "0.6384615384615384",
+        "f1-score": "0.6613545816733067",
+        "support": "130.0"
+      },
+      {
+        "": "Girls",
+        "precision": "0.6153846153846154",
+        "recall": "0.6486486486486487",
+        "f1-score": "0.631578947368421",
+        "support": "111.0"
+      },
+      {
+        "": "Men",
+        "precision": "0.9045731707317073",
+        "recall": "0.9437022900763359",
+        "f1-score": "0.9237235367372354",
+        "support": "3144.0"
+      },
+      {
+        "": "Unisex",
+        "precision": "0.6741071428571429",
+        "recall": "0.5084175084175084",
+        "f1-score": "0.5796545105566219",
+        "support": "297.0"
+      },
+      {
+        "": "Women",
+        "precision": "0.916497975708502",
+        "recall": "0.8894891944990176",
+        "f1-score": "0.9027916251246261",
+        "support": "2036.0"
+      }
+    ]
+  },
+  {
+    "target": "usage",
+    "selected": "cnn_continue_weighted",
+    "cnn_selected": "cnn_continue_weighted",
+    "framework": "tensorflow_keras",
+    "model_file": "usage_model.keras",
+    "test_metrics": {
+      "accuracy": 0.8954179783140959,
+      "macro_f1": 0.4170981022326016,
+      "ece": 0.026016665869511395,
+      "nll": 0.3173367381095886,
+      "brier": 0.1634014526603479
+    },
+    "split_sizes": {
+      "train": 27050,
+      "selection": 2900,
+      "calibration": 1378,
+      "policy": 1564
+    },
+    "test_scope": "internal_test_with_prior_development_exposure",
+    "title": "Occasion",
+    "stem": "usage",
+    "labels": [
+      "Casual",
+      "Ethnic",
+      "Formal",
+      "Home",
+      "NA",
+      "Party",
+      "Smart Casual",
+      "Sports",
+      "Travel"
+    ],
+    "comparison": [
+      {
+        "": "cnn_continue_weighted",
+        "family": "cnn",
+        "validation_accuracy": "0.8944827586206896",
+        "validation_macro_f1": "0.4543058486574449",
+        "complexity_parameters": "655049",
+        "epochs_run": "6",
+        "selected": "True"
+      },
+      {
+        "": "shallow_mlp_lower_lr",
+        "family": "shallow_mlp",
+        "validation_accuracy": "0.8737931034482759",
+        "validation_macro_f1": "0.4521854312809723",
+        "complexity_parameters": "9439753",
+        "epochs_run": "14",
+        "selected": "False"
+      },
+      {
+        "": "deeper_mlp",
+        "family": "deeper_mlp",
+        "validation_accuracy": "0.8562068965517241",
+        "validation_macro_f1": "0.35996013882553585",
+        "complexity_parameters": "9479177",
+        "epochs_run": "18",
+        "selected": "False"
+      }
+    ],
+    "per_class": [
+      {
+        "": "Casual",
+        "precision": "0.9318023660403618",
+        "recall": "0.93223485727547",
+        "f1-score": "0.9320185614849188",
+        "support": "4309.0"
+      },
+      {
+        "": "Ethnic",
+        "precision": "0.8789954337899544",
+        "recall": "0.927710843373494",
+        "f1-score": "0.902696365767878",
+        "support": "415.0"
+      },
+      {
+        "": "Formal",
+        "precision": "0.7333333333333333",
+        "recall": "0.8208955223880597",
+        "f1-score": "0.7746478873239436",
+        "support": "335.0"
+      },
+      {
+        "": "Home",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "0.0"
+      },
+      {
+        "": "NA",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "23.0"
+      },
+      {
+        "": "Party",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "2.0"
+      },
+      {
+        "": "Smart Casual",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "7.0"
+      },
+      {
+        "": "Sports",
+        "precision": "0.7470489038785835",
+        "recall": "0.7088",
+        "f1-score": "0.7274220032840722",
+        "support": "625.0"
+      },
+      {
+        "": "Travel",
+        "precision": "0.0",
+        "recall": "0.0",
+        "f1-score": "0.0",
+        "support": "2.0"
+      }
+    ]
+  }
+]

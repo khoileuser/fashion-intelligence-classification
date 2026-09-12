@@ -72,3 +72,17 @@ class FashionVisualSearch:
             item["score"] = float(scores[index])
             results.append(item)
         return results
+
+
+    def similar_by_id(self, item_id: str, eligible_ids: set[str]) -> list[tuple[str, float]]:
+        """Rank existing gallery embeddings, excluding the query item itself."""
+        ids = self.metadata['id'].astype(str).tolist()
+        if item_id not in ids:
+            raise ValueError('Reference product has no gallery embedding')
+        query = self.embeddings[ids.index(item_id)]
+        # Normalize defensively; cosine scores are not probabilities.
+        query = query / max(float(np.linalg.norm(query)), 1e-12)
+        scores = (self.embeddings @ query) / np.maximum(np.linalg.norm(self.embeddings, axis=1), 1e-12)
+        indices = np.argsort(-scores, kind='stable')
+        return [(ids[i], float(np.clip(scores[i], -1, 1))) for i in indices
+                if ids[i] != item_id and ids[i] in eligible_ids]
