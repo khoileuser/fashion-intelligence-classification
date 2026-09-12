@@ -1,16 +1,55 @@
 {
   "task4_visual_search_analysis.ipynb": {
     "status": "complete",
-    "source_sha256": "c58f597d62365141e3ab9daf0f0309362c28c4156de3ca8e0d217e1ffe9cce78",
-    "started": 1789143869.867116,
-    "dependencies_sha256": "64f29c7381cc8c8d3c26a5f2c9a02ff669090bce99bb1fa74dbe301a4086890f",
-    "finished": 1789144352.012597,
+    "source_sha256": "52bbd67fe33edd9c1fd7d8638aaed59cdad4c2181031f479f496699ebbecea79",
+    "started": 1789176994.9802759,
+    "dependencies_sha256": "f9836674d90020a72be997272afdf20023d55d19b8ab92a29ea41503d38df6d2",
+    "finished": 1789177510.117739,
     "artifacts": [
       "models/visual_search_model.json",
       "models/visual_search_embeddings.npy",
       "models/visual_search_metadata.csv",
       "results/visual_search_history.csv",
       "prediction/styles_prediction.csv"
+    ]
+  },
+  "task1_article_type_classification.ipynb": {
+    "status": "complete",
+    "source_sha256": "1bd189ff7ea86bd93934e394a28d872ae417378d2fde5e59927c4efd93533f4d",
+    "started": 1789149583.9973645,
+    "dependencies_sha256": "6b4229ac91feaeb16e52d901147527f8271bf2666ecd9d8772797555fb571129",
+    "finished": 1789151060.5612805,
+    "artifacts": [
+      "models/article_type_model.keras",
+      "results/article_type_summary.json",
+      "results/article_type_comparison.csv"
+    ]
+  },
+  "task2_season_classification.ipynb": {
+    "status": "complete",
+    "source_sha256": "ced4f27452e01cbbb9470b0c00568e3031a52bf64a7ce810fab3b9aab1ef168a",
+    "started": 1789151060.5777133,
+    "dependencies_sha256": "6b4229ac91feaeb16e52d901147527f8271bf2666ecd9d8772797555fb571129",
+    "finished": 1789152281.1476965,
+    "artifacts": [
+      "models/season_model.keras",
+      "results/season_summary.json",
+      "results/season_comparison.csv"
+    ]
+  },
+  "task3_occasion_gender_classification.ipynb": {
+    "status": "complete",
+    "source_sha256": "d5ed7cbfd3f4cdac1f42d143ee2ccba5dacee51502648b69a0c1c657b0d788e0",
+    "started": 1789152281.167202,
+    "dependencies_sha256": "6b4229ac91feaeb16e52d901147527f8271bf2666ecd9d8772797555fb571129",
+    "finished": 1789154591.6805034,
+    "artifacts": [
+      "models/gender_model.keras",
+      "results/gender_summary.json",
+      "results/gender_comparison.csv",
+      "models/usage_model.keras",
+      "results/usage_summary.json",
+      "results/usage_comparison.csv"
     ]
   }
 }

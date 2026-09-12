@@ -5,11 +5,11 @@
   "framework": "tensorflow_keras",
   "model_file": "gender_model.keras",
   "test_metrics": {
-    "accuracy": 0.8861490031479539,
-    "macro_f1": 0.73960213101118,
-    "ece": 0.011449659864686313,
-    "nll": 0.30171458221692504,
-    "brier": 0.16127984663310863
+    "accuracy": 0.8891220706540749,
+    "macro_f1": 0.7398206402920422,
+    "ece": 0.021677308584602213,
+    "nll": 0.30672353506088257,
+    "brier": 0.16325914026673252
   },
   "split_sizes": {
     "train": 27051,

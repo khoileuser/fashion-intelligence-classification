@@ -1,15 +1,15 @@
 {
   "target": "usage",
-  "selected": "shallow_mlp_lower_lr",
+  "selected": "cnn_continue_weighted",
   "cnn_selected": "cnn_continue_weighted",
   "framework": "tensorflow_keras",
   "model_file": "usage_model.keras",
   "test_metrics": {
-    "accuracy": 0.856942987058412,
-    "macro_f1": 0.37451945505799694,
-    "ece": 0.023050722349714104,
-    "nll": 0.4607789375723994,
-    "brier": 0.21680178060261646
+    "accuracy": 0.8954179783140959,
+    "macro_f1": 0.4170981022326016,
+    "ece": 0.026016665869511395,
+    "nll": 0.3173367381095886,
+    "brier": 0.1634014526603479
   },
   "split_sizes": {
     "train": 27050,

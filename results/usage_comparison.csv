@@ -1,4 +1,4 @@
-method,validation_accuracy,validation_macro_f1,validation_ece,complexity_parameters,epochs_run,family,selected
-shallow_mlp_lower_lr,0.8737931034482759,0.4521854312809723,0.023828410495971803,9439753,14,shallow_mlp,True
-deeper_mlp,0.8655172413793103,0.36942605597541844,0.012319693359835397,9479177,30,deeper_mlp,False
-cnn_continue_weighted,0.8955172413793103,0.44973186307485413,0.028262618019663087,655049,8,cnn,False
+,family,validation_accuracy,validation_macro_f1,complexity_parameters,epochs_run,selected
+cnn_continue_weighted,cnn,0.8944827586206896,0.4543058486574449,655049,6,True
+shallow_mlp_lower_lr,shallow_mlp,0.8737931034482759,0.4521854312809723,9439753,14,False
+deeper_mlp,deeper_mlp,0.8562068965517241,0.35996013882553585,9479177,18,False

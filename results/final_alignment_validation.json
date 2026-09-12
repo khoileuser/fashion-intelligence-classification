@@ -1,0 +1,82 @@
+{
+  "article_type": {
+    "model": "article_type_model.keras",
+    "sha256": "df7871f812580230cd7d000676a84874accac4153535114ce9e16c2dc7af5f6b",
+    "selected": "cnn_continue_weighted",
+    "selection": {
+      "family": "cnn",
+      "validation_accuracy": 0.8696551724137931,
+      "validation_macro_f1": 0.6964320883810664,
+      "complexity_parameters": 684604,
+      "epochs_run": 8,
+      "selected": true
+    },
+    "test": {
+      "accuracy": 0.8634137810423225,
+      "macro_f1": 0.6413678674484741,
+      "ece": 0.043308230459002096,
+      "nll": 0.48856672644615173,
+      "brier": 0.200232006557269
+    }
+  },
+  "season": {
+    "model": "season_model.keras",
+    "sha256": "1f1589a9ecbd4d7d46a72dcbab6e30477e2a1749edd8513a7292254a2df92793",
+    "selected": "cnn_continue",
+    "selection": {
+      "family": "cnn",
+      "validation_accuracy": 0.7577597840755735,
+      "validation_macro_f1": 0.7394009003766844,
+      "complexity_parameters": 653764,
+      "epochs_run": 8,
+      "selected": true
+    },
+    "test": {
+      "accuracy": 0.7391076115485564,
+      "macro_f1": 0.7225275273758592,
+      "ece": 0.030766072913626256,
+      "nll": 0.6426904797554016,
+      "brier": 0.3544544456400661
+    }
+  },
+  "gender": {
+    "model": "gender_model.keras",
+    "sha256": "0ee5a489a6c6c92fdeebae7fea4d7ee66a812f3136a3f486456eec60db260a62",
+    "selected": "cnn_four_blocks_scheduled",
+    "selection": {
+      "family": "cnn",
+      "validation_accuracy": 0.8993103448275862,
+      "validation_macro_f1": 0.7901228224704215,
+      "complexity_parameters": 654021,
+      "epochs_run": 20,
+      "selected": true
+    },
+    "test": {
+      "accuracy": 0.8891220706540749,
+      "macro_f1": 0.7398206402920422,
+      "ece": 0.021677308584602213,
+      "nll": 0.30672353506088257,
+      "brier": 0.16325914026673252
+    }
+  },
+  "usage": {
+    "model": "usage_model.keras",
+    "sha256": "1645bd06ce1860e6792ae11275a2e5c546078aa9bea95594cd960aba90a965da",
+    "selected": "cnn_continue_weighted",
+    "selection": {
+      "family": "cnn",
+      "validation_accuracy": 0.8944827586206896,
+      "validation_macro_f1": 0.4543058486574449,
+      "complexity_parameters": 655049,
+      "epochs_run": 6,
+      "selected": true
+    },
+    "test": {
+      "accuracy": 0.8954179783140959,
+      "macro_f1": 0.4170981022326016,
+      "ece": 0.026016665869511395,
+      "nll": 0.3173367381095886,
+      "brier": 0.1634014526603479
+    }
+  }
+}

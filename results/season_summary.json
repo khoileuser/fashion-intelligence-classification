@@ -5,11 +5,11 @@
   "framework": "tensorflow_keras",
   "model_file": "season_model.keras",
   "test_metrics": {
-    "accuracy": 0.7394575678040245,
-    "macro_f1": 0.7235192476315109,
-    "ece": 0.03327251439435442,
-    "nll": 0.643482129457791,
-    "brier": 0.3547671225479548
+    "accuracy": 0.7391076115485564,
+    "macro_f1": 0.7225275273758592,
+    "ece": 0.030766072913626256,
+    "nll": 0.6426904797554016,
+    "brier": 0.3544544456400661
   },
   "split_sizes": {
     "train": 27038,
