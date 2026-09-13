@@ -155,7 +155,7 @@ async def search(
     image = await read_image(file)
     try:
         article = classifier_services()['articleType'].predict(image, top_k=1)
-        results = search_service().search(image, top_k, preferred_article_type=article['label'], exclude_ids=uploaded_catalogue_ids(image))
+        results = search_service().search(image, top_k, preferred_article_type=article['label'], exclude_ids=uploaded_catalogue_ids(image), colour_aware=True)
     except FileNotFoundError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
     return {"results": results}
@@ -176,6 +176,7 @@ async def analyse(
         results = search_service().search(
             image, search_top_k, preferred_article_type=predictions['articleType']['label'],
             exclude_ids=uploaded_catalogue_ids(image),
+            colour_aware=True,
         )
     except FileNotFoundError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error

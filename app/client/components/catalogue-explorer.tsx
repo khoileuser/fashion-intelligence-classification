@@ -152,8 +152,9 @@ export function CatalogueExplorer() {
                                 `item ${similar}`}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                            Cosine similarity ranks visual features, not match
-                            probability. The reference item is excluded.
+                            Same article type first, then matching colour and
+                            visual similarity. Other colours follow when available.
+                            Scores measure visual similarity, not match probability.
                         </p>
                     </div>
                     <Button
@@ -197,7 +198,7 @@ export function CatalogueExplorer() {
                     <p role="status" className="text-sm text-muted-foreground">
                         {data?.total.toLocaleString()} products /{" "}
                         {similar
-                            ? "Sorted by visual similarity"
+                            ? "Sorted by article type, colour, and visual similarity"
                             : "Random order"}
                     </p>
                     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -232,6 +233,7 @@ export function CatalogueExplorer() {
                                     <div className="flex flex-wrap gap-1">
                                         {[
                                             item.articleType,
+                                            item.baseColour,
                                             item.season,
                                             item.usage,
                                             item.gender,

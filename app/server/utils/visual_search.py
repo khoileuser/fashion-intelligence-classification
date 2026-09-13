@@ -10,6 +10,7 @@ import json
 from PIL import Image
 
 from app.server.utils.search_features import NeuralImageEncoder, file_digest
+from app.server.utils.colour import FAMILIES, estimate_colour, rank_preferences
 
 
 class FashionVisualSearch:
@@ -48,8 +49,9 @@ class FashionVisualSearch:
         self, image: Image.Image, top_k: int = 5,
         preferred_article_type: str | None = None,
         exclude_ids: set[str] | None = None,
+        colour_aware: bool = False,
     ) -> list[dict]:
-        """Rank the preferred article type first, then cosine within each group.
+        """Rank preferred type, optional colour, then cosine within each group.
 
         Without a preference this remains pure visual retrieval for notebook
         evaluation. Other types fill spare slots when the preferred type is rare.
@@ -60,9 +62,15 @@ class FashionVisualSearch:
         query = self.encoder.encode([image])[0]
         scores = self.embeddings @ query
         indices = np.argsort(-scores, kind='stable')
-        if preferred_article_type:
-            matches = self.metadata['articleType'].eq(preferred_article_type).to_numpy()
-            indices = np.concatenate([indices[matches[indices]], indices[~matches[indices]]])
+        colours = set()
+        if colour_aware:
+            known = self.metadata[self.metadata['id'].astype(str).isin(exclude_ids or set())]
+            known_colours = set(known['baseColour']) - {'', 'NA', 'Multi'}
+            if len(known_colours) == 1:
+                colours = known_colours
+            else:
+                colours = FAMILIES.get(estimate_colour(image), set())
+        indices = rank_preferences(indices, self.metadata, preferred_article_type, colours)
         if exclude_ids:
             ids = self.metadata['id'].astype(str).to_numpy()
             indices = np.asarray([i for i in indices if ids[i] not in exclude_ids], dtype=int)
@@ -82,7 +90,7 @@ class FashionVisualSearch:
 
 
     def similar_by_id(self, item_id: str, eligible_ids: set[str]) -> list[tuple[str, float]]:
-        """Rank existing gallery embeddings, excluding the query item itself."""
+        """Prefer the reference type/colour, respecting eligibility and exclusion."""
         ids = self.metadata['id'].astype(str).tolist()
         if item_id not in ids:
             raise ValueError('Reference product has no gallery embedding')
@@ -91,5 +99,9 @@ class FashionVisualSearch:
         query = query / max(float(np.linalg.norm(query)), 1e-12)
         scores = (self.embeddings @ query) / np.maximum(np.linalg.norm(self.embeddings, axis=1), 1e-12)
         indices = np.argsort(-scores, kind='stable')
+        reference = self.metadata.iloc[ids.index(item_id)]
+        colour = reference['baseColour']
+        indices = rank_preferences(indices, self.metadata, reference['articleType'],
+                                   {colour} if colour not in ('', 'NA', 'Multi') else set())
         return [(ids[i], float(np.clip(scores[i], -1, 1))) for i in indices
                 if ids[i] != item_id and ids[i] in eligible_ids]

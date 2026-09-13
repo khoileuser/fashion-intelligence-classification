@@ -545,8 +545,8 @@ export function FashionAnalyser({ initialSample }: { initialSample?: string }) {
                                     Similar catalogue items
                                 </h2>
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    Predicted article type first, then visual
-                                    similarity.
+                                    Predicted article type first, then matching
+                                    colour when available, then visual similarity.
                                 </p>
                             </div>
                             <p className="text-sm text-muted-foreground">
